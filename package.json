@@ -1,0 +1,7 @@
+{
+    "name": "fingure",       
+    "version": "1.0.0",        
+    "dependencies": {          
+        "serialport": "^4.0.0"
+    }
+}
