@@ -1,0 +1,123 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Project:</h2>
+D:\workspace-npm\fingure\mcu\fingure.uvproj
+Project File Date:  03/07/2017
+
+<h2>Output:</h2>
+Build target 'Target 1'
+compiling fingure.c...
+fingure.h(16): error C129: missing ';' before 'INPUT'
+Target not created
+Build target 'Target 1'
+compiling fingure.c...
+fingure.h(16): error C247: non-address/-constant initializer
+Target not created
+Build target 'Target 1'
+compiling fingure.c...
+fingure.c(57): error C141: syntax error near ')'
+Target not created
+Build target 'Target 1'
+compiling fingure.c...
+fingure.c(175): error C141: syntax error near '>>'
+fingure.c(186): error C221: non-constant case/dim expression
+fingure.c(196): error C141: syntax error near ':'
+fingure.c(200): error C141: syntax error near '}'
+fingure.c(206): error C221: non-constant case/dim expression
+fingure.c(207): error C141: syntax error near '{'
+Target not created
+Build target 'Target 1'
+compiling fingure.c...
+fingure.c(175): error C141: syntax error near ';'
+fingure.c(175): error C141: syntax error near '>>'
+fingure.c(175): error C141: syntax error near ')'
+fingure.c(186): error C221: non-constant case/dim expression
+fingure.c(196): error C141: syntax error near ':'
+fingure.c(200): error C141: syntax error near '}'
+fingure.c(206): error C221: non-constant case/dim expression
+fingure.c(207): error C141: syntax error near '{'
+Target not created
+Build target 'Target 1'
+compiling fingure.c...
+fingure.c(187): error C221: non-constant case/dim expression
+fingure.c(197): error C141: syntax error near ':'
+fingure.c(201): error C141: syntax error near '}'
+fingure.c(207): error C221: non-constant case/dim expression
+fingure.c(208): error C141: syntax error near '{'
+Target not created
+Build target 'Target 1'
+compiling fingure.c...
+fingure.c(187): error C221: non-constant case/dim expression
+fingure.c(201): error C141: syntax error near '}'
+fingure.c(207): error C221: non-constant case/dim expression
+fingure.c(208): error C141: syntax error near '{'
+Target not created
+Build target 'Target 1'
+compiling fingure.c...
+fingure.c(73): error C141: syntax error near ';'
+fingure.c(73): error C141: syntax error near '&&'
+fingure.c(187): error C141: syntax error near ';'
+fingure.c(187): error C141: syntax error near ':'
+fingure.c(201): error C141: syntax error near '}'
+fingure.c(207): error C141: syntax error near ';'
+fingure.c(207): error C141: syntax error near ':'
+Target not created
+Build target 'Target 1'
+compiling fingure.c...
+fingure.c(73): error C141: syntax error near ';'
+fingure.c(73): error C141: syntax error near '&&'
+fingure.c(187): error C141: syntax error near ';'
+fingure.c(187): error C141: syntax error near ':'
+fingure.c(201): error C141: syntax error near '}'
+fingure.c(207): error C141: syntax error near ';'
+fingure.c(207): error C141: syntax error near ':'
+Target not created
+Build target 'Target 1'
+compiling fingure.c...
+fingure.c(73): error C141: syntax error near ';'
+fingure.c(73): error C141: syntax error near '&&'
+fingure.c(187): error C141: syntax error near ';'
+fingure.c(187): error C141: syntax error near ':'
+fingure.c(201): error C141: syntax error near '}'
+fingure.c(207): error C141: syntax error near ';'
+fingure.c(207): error C141: syntax error near ':'
+Target not created
+Build target 'Target 1'
+compiling fingure.c...
+fingure.c(73): error C141: syntax error near ';'
+fingure.c(73): error C141: syntax error near '&&'
+fingure.c(187): error C141: syntax error near ';'
+fingure.c(187): error C141: syntax error near ':'
+fingure.c(201): error C141: syntax error near '}'
+fingure.c(207): error C141: syntax error near ';'
+fingure.c(207): error C141: syntax error near ':'
+Target not created
+Build target 'Target 1'
+compiling fingure.c...
+fingure.c(201): error C141: syntax error near '}'
+fingure.c(208): error C141: syntax error near '{'
+Target not created
+Build target 'Target 1'
+compiling fingure.c...
+fingure.c(201): error C141: syntax error near '}'
+fingure.c(216): error C141: syntax error near '}'
+fingure.c(220): error C100: unprintable character 0xEF skipped
+fingure.c(220): error C100: unprintable character 0xBC skipped
+fingure.c(220): error C100: unprintable character 0x9B skipped
+fingure.c(221): error C141: syntax error near 'REN'
+Target not created
+Build target 'Target 1'
+compiling fingure.c...
+fingure.c(216): error C100: unprintable character 0xEF skipped
+fingure.c(216): error C100: unprintable character 0xBC skipped
+fingure.c(216): error C100: unprintable character 0x9B skipped
+fingure.c(217): error C141: syntax error near 'REN'
+Target not created
+Build target 'Target 1'
+compiling fingure.c...
+linking...
+Program Size: data=134.0 xdata=128 code=1227
+creating hex file from "fingure"...
+"fingure" - 0 Error(s), 0 Warning(s).

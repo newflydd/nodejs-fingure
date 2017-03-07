@@ -1,0 +1,4 @@
+"fingure.obj",
+"uart.obj" 
+TO "fingure" 
+RAMSIZE(256) 

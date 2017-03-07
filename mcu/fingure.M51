@@ -1,0 +1,440 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        03/07/2017  18:03:37  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+C:\KEIL\C51\BIN\BL51.EXE fingure.obj, uart.obj TO fingure RAMSIZE (256)
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  fingure.obj (FINGURE)
+  uart.obj (UART)
+  C:\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+  C:\KEIL\C51\LIB\C51S.LIB (?C?COPY)
+  C:\KEIL\C51\LIB\C51S.LIB (?C?CLDPTR)
+  C:\KEIL\C51\LIB\C51S.LIB (?C?CLDOPTR)
+  C:\KEIL\C51\LIB\C51S.LIB (?C_INIT)
+
+
+LINK MAP OF MODULE:  fingure (FINGURE)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     000AH     UNIT         _DATA_GROUP_
+                    0012H     000EH                  *** GAP ***
+            DATA    0020H     0001H     BIT_ADDR     ?BA?FINGURE
+            DATA    0021H     0026H     UNIT         ?DT?FINGURE
+            IDATA   0047H     004CH     UNIT         ?ID?FINGURE
+            IDATA   0093H     0001H     UNIT         ?STACK
+
+            * * * * * * *  X D A T A   M E M O R Y  * * * * * * *
+            XDATA   0000H     0080H     UNIT         ?XD?FINGURE
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     001DH     UNIT         ?PR?RECEIVEEVENTFUNCTION?FINGURE
+                    0020H     0003H                  *** GAP ***
+            CODE    0023H     0003H     ABSOLUTE     
+            CODE    0026H     013CH     UNIT         ?C?LIB_CODE
+            CODE    0162H     00E6H     UNIT         ?PR?SERIALINTERRUPTCALLBACK?FINGURE
+            CODE    0248H     008CH     UNIT         ?C_C51STARTUP
+            CODE    02D4H     0064H     UNIT         ?PR?_BUILDSENDCMD?FINGURE
+            CODE    0338H     0049H     UNIT         ?PR?MAIN?FINGURE
+            CODE    0381H     003BH     UNIT         ?PR?_GETCHECKSUM?FINGURE
+            CODE    03BCH     0037H     UNIT         ?PR?SENDCMDFUNCTION?FINGURE
+            CODE    03F3H     0031H     UNIT         ?PR?_UARTSENDBUFFER?UART
+            CODE    0424H     0027H     UNIT         ?PR?INITMAIN?FINGURE
+            CODE    044BH     0022H     UNIT         ?PR?CHECKINPUTSIGNAL?FINGURE
+            CODE    046DH     0016H     UNIT         ?C_INITSEG
+            CODE    0483H     0014H     UNIT         ?PR?INITUART?UART
+            CODE    0497H     000BH     UNIT         ?PR?_DELAY?FINGURE
+            CODE    04A2H     000AH     UNIT         ?PR?RESETFINGUREFUNCTION?FINGURE
+            CODE    04ACH     0009H     UNIT         ?PR?WAITFORRECEIVEFUNCTION?FINGURE
+            CODE    04B5H     0009H     UNIT         ?PR?UARTDELAY?UART
+            CODE    04BEH     0008H     UNIT         ?CO?FINGURE
+            CODE    04C6H     0008H     UNIT         ?PR?_UARTSENDBYTE?UART
+BL51 BANKED LINKER/LOCATER V6.22                                                      03/07/2017  18:03:37  PAGE 2
+
+
+
+
+
+OVERLAY MAP OF MODULE:   fingure (FINGURE)
+
+
+SEGMENT                                       DATA_GROUP 
+  +--> CALLED SEGMENT                       START    LENGTH
+-----------------------------------------------------------
+?C_C51STARTUP                               -----    -----
+  +--> ?PR?MAIN?FINGURE
+  +--> ?C_INITSEG
+
+?PR?MAIN?FINGURE                            -----    -----
+  +--> ?PR?INITUART?UART
+  +--> ?PR?INITMAIN?FINGURE
+  +--> ?PR?RECEIVEEVENTFUNCTION?FINGURE
+  +--> ?PR?WAITFORRECEIVEFUNCTION?FINGURE
+  +--> ?PR?RESETFINGUREFUNCTION?FINGURE
+  +--> ?PR?CHECKINPUTSIGNAL?FINGURE
+  +--> ?PR?SENDCMDFUNCTION?FINGURE
+  +--> ?PR?_DELAY?FINGURE
+
+?PR?INITMAIN?FINGURE                        -----    -----
+  +--> ?CO?FINGURE
+
+?PR?RECEIVEEVENTFUNCTION?FINGURE            -----    -----
+  +--> ?PR?_DELAY?FINGURE
+
+?PR?WAITFORRECEIVEFUNCTION?FINGURE          -----    -----
+  +--> ?PR?_DELAY?FINGURE
+
+?PR?RESETFINGUREFUNCTION?FINGURE            -----    -----
+  +--> ?PR?_DELAY?FINGURE
+
+?PR?SENDCMDFUNCTION?FINGURE                 0008H    0001H
+  +--> ?CO?FINGURE
+  +--> ?PR?_BUILDSENDCMD?FINGURE
+  +--> ?PR?_UARTSENDBUFFER?UART
+
+?PR?_BUILDSENDCMD?FINGURE                   0009H    0004H
+  +--> ?PR?_GETCHECKSUM?FINGURE
+
+?PR?_GETCHECKSUM?FINGURE                    000DH    0005H
+
+?PR?_UARTSENDBUFFER?UART                    0009H    0005H
+  +--> ?PR?_UARTSENDBYTE?UART
+  +--> ?PR?UARTDELAY?UART
+
+
+
+SYMBOL TABLE OF MODULE:  fingure (FINGURE)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        FINGURE
+BL51 BANKED LINKER/LOCATER V6.22                                                      03/07/2017  18:03:37  PAGE 3
+
+
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0021H         PUBLIC        receiveByte
+  D:0022H         PUBLIC        receivePackageLength
+  D:0024H         PUBLIC        receiveCheckSum
+  D:0090H         PUBLIC        P1
+  D:00A0H         PUBLIC        P2
+  D:00B0H         PUBLIC        P3
+  B:00A8H.7       PUBLIC        EA
+  D:0026H         PUBLIC        sendBuffer
+  D:00A8H         PUBLIC        IE
+  C:03BCH         PUBLIC        sendCmdFunction
+  C:0497H         PUBLIC        _delay
+  D:0036H         PUBLIC        inputSignal
+  D:00B8H         PUBLIC        IP
+  B:0098H.0       PUBLIC        RI
+  C:0338H         PUBLIC        main
+  B:0020H.1       PUBLIC        waitForReceive
+  C:04BEH         PUBLIC        sendPackageHeader
+  D:0037H         PUBLIC        receiveBufferLength
+  D:0038H         PUBLIC        ucharTemp
+  D:0099H         PUBLIC        SBUF
+  D:0039H         PUBLIC        cmdAndParams
+  D:0098H         PUBLIC        SCON
+  D:003EH         PUBLIC        cfmCode
+  D:0088H         PUBLIC        TCON
+  C:02D4H         PUBLIC        _buildSendCmd
+  C:0003H         PUBLIC        receiveEventFunction
+  D:003FH         PUBLIC        waitTimes
+  C:0424H         PUBLIC        initMain
+  X:0000H         PUBLIC        fingureAddressPage
+  D:0020H         PUBLIC        bitChar
+  D:0040H         PUBLIC        sendCmd
+  C:04C5H         SYMBOL        _?ix1000
+  I:0047H         PUBLIC        receiveBuffer
+  C:04A2H         PUBLIC        resetFingureFunction
+  D:0041H         PUBLIC        sendCmdStatus
+  I:0073H         PUBLIC        receiveParams
+  D:0042H         PUBLIC        datByte
+  C:0381H         PUBLIC        _getCheckSum
+  D:0043H         PUBLIC        uintTemp
+  B:0098H.4       PUBLIC        REN
+  D:00C8H         PUBLIC        T2CON
+  C:0162H         PUBLIC        serialInterruptCallback
+  D:0045H         PUBLIC        sendBufferLength
+  C:04ACH         PUBLIC        waitForReceiveFunction
+  D:0046H         PUBLIC        receiveEventStatus
+  C:044BH         PUBLIC        checkInputSignal
+  D:00D0H         PUBLIC        PSW
+  B:0020H.0       PUBLIC        receiveCmdNotify
+  -------         PROC          _DELAY
+  D:0006H         SYMBOL        num
+  C:0497H         LINE#         17
+  C:0497H         LINE#         18
+  C:04A1H         LINE#         19
+  -------         ENDPROC       _DELAY
+  -------         PROC          INITMAIN
+  -------         DO            
+BL51 BANKED LINKER/LOCATER V6.22                                                      03/07/2017  18:03:37  PAGE 4
+
+
+  D:0006H         SYMBOL        pos
+  -------         ENDDO         
+  C:0424H         LINE#         22
+  C:0424H         LINE#         25
+  C:0427H         LINE#         26
+  C:043AH         LINE#         27
+  C:0445H         LINE#         30
+  C:0448H         LINE#         32
+  C:044AH         LINE#         33
+  -------         ENDPROC       INITMAIN
+  -------         PROC          MAIN
+  C:0338H         LINE#         35
+  C:0338H         LINE#         36
+  C:033BH         LINE#         37
+  C:033EH         LINE#         40
+  C:0341H         LINE#         42
+  C:0341H         LINE#         44
+  C:0344H         LINE#         45
+  C:0346H         LINE#         47
+  C:0349H         LINE#         50
+  C:034CH         LINE#         51
+  C:034EH         LINE#         52
+  C:0350H         LINE#         53
+  C:0350H         LINE#         59
+  C:0353H         LINE#         60
+  C:035AH         LINE#         61
+  C:035FH         LINE#         63
+  C:0362H         LINE#         64
+  C:0364H         LINE#         65
+  C:0364H         LINE#         72
+  C:0369H         LINE#         73
+  C:0372H         LINE#         74
+  C:0375H         LINE#         75
+  C:0375H         LINE#         77
+  C:0378H         LINE#         78
+  C:037FH         LINE#         79
+  -------         ENDPROC       MAIN
+  -------         PROC          SERIALINTERRUPTCALLBACK
+  C:0162H         LINE#         85
+  C:0173H         LINE#         86
+  C:0179H         LINE#         87
+  C:017BH         LINE#         90
+  C:017EH         LINE#         91
+  C:0185H         LINE#         92
+  C:0187H         LINE#         94
+  C:018CH         LINE#         97
+  C:019CH         LINE#         98
+  C:01B3H         LINE#         102
+  C:01CAH         LINE#         104
+  C:01CFH         LINE#         106
+  C:01E4H         LINE#         107
+  C:01F2H         LINE#         108
+  C:01F6H         LINE#         111
+  C:01FCH         LINE#         112
+  C:020AH         LINE#         113
+  C:0219H         LINE#         114
+  C:021DH         LINE#         115
+BL51 BANKED LINKER/LOCATER V6.22                                                      03/07/2017  18:03:37  PAGE 5
+
+
+  C:0227H         LINE#         117
+  C:0229H         LINE#         119
+  C:022FH         LINE#         120
+  C:0231H         LINE#         121
+  C:0234H         LINE#         123
+  C:0236H         LINE#         124
+  C:0236H         LINE#         126
+  C:0239H         LINE#         127
+  C:0239H         LINE#         128
+  C:0239H         LINE#         129
+  -------         ENDPROC       SERIALINTERRUPTCALLBACK
+  -------         PROC          _BUILDSENDCMD
+  D:0009H         SYMBOL        cmdAndParams
+  D:000CH         SYMBOL        capLength
+  -------         DO            
+  D:0004H         SYMBOL        checkSum
+  D:0007H         SYMBOL        packageLength
+  -------         ENDDO         
+  C:02D4H         LINE#         132
+  C:02DCH         LINE#         134
+  C:02E1H         LINE#         135
+  C:02E7H         LINE#         137
+  C:02ECH         LINE#         139
+  C:02EFH         LINE#         140
+  C:02F1H         LINE#         143
+  C:02FAH         LINE#         144
+  C:0311H         LINE#         145
+  C:0315H         LINE#         147
+  C:0325H         LINE#         148
+  C:032EH         LINE#         149
+  C:0337H         LINE#         150
+  -------         ENDPROC       _BUILDSENDCMD
+  -------         PROC          _GETCHECKSUM
+  D:0007H         SYMBOL        packageLength
+  D:000EH         SYMBOL        cmdAndParams
+  D:0011H         SYMBOL        capLength
+  C:0381H         LINE#         159
+  C:0387H         LINE#         160
+  C:038CH         LINE#         161
+  C:0396H         LINE#         162
+  C:03AEH         LINE#         163
+  C:03B2H         LINE#         164
+  C:03BBH         LINE#         165
+  -------         ENDPROC       _GETCHECKSUM
+  -------         PROC          CHECKINPUTSIGNAL
+  -------         DO            
+  D:0007H         SYMBOL        inputValue
+  -------         ENDDO         
+  C:044BH         LINE#         171
+  C:044BH         LINE#         172
+  C:044DH         LINE#         173
+  C:0453H         LINE#         175
+  C:0460H         LINE#         176
+  C:0466H         LINE#         177
+  C:0468H         LINE#         178
+  C:046AH         LINE#         179
+  C:046AH         LINE#         181
+BL51 BANKED LINKER/LOCATER V6.22                                                      03/07/2017  18:03:37  PAGE 6
+
+
+  C:046CH         LINE#         182
+  -------         ENDPROC       CHECKINPUTSIGNAL
+  -------         PROC          RECEIVEEVENTFUNCTION
+  C:0003H         LINE#         185
+  C:0003H         LINE#         186
+  C:0008H         LINE#         187
+  C:0008H         LINE#         188
+  C:000CH         LINE#         190
+  C:000FH         LINE#         191
+  C:0015H         LINE#         193
+  C:0018H         LINE#         194
+  C:001FH         LINE#         195
+  C:001FH         LINE#         196
+  C:001FH         LINE#         197
+  C:001FH         LINE#         198
+  C:001FH         LINE#         199
+  C:001FH         LINE#         200
+  -------         ENDPROC       RECEIVEEVENTFUNCTION
+  -------         PROC          SENDCMDFUNCTION
+  -------         DO            
+  D:0008H         SYMBOL        test
+  -------         ENDDO         
+  C:03BCH         LINE#         203
+  C:03BCH         LINE#         204
+  C:03CFH         LINE#         205
+  C:03D5H         LINE#         206
+  C:03D5H         LINE#         207
+  C:03E0H         LINE#         208
+  C:03EBH         LINE#         209
+  C:03EBH         LINE#         210
+  C:03EBH         LINE#         211
+  C:03EBH         LINE#         212
+  C:03EBH         LINE#         215
+  C:03EEH         LINE#         216
+  C:03F0H         LINE#         217
+  C:03F2H         LINE#         218
+  -------         ENDPROC       SENDCMDFUNCTION
+  -------         PROC          WAITFORRECEIVEFUNCTION
+  C:04ACH         LINE#         221
+  C:04ACH         LINE#         222
+  C:04AEH         LINE#         223
+  -------         ENDPROC       WAITFORRECEIVEFUNCTION
+  -------         PROC          RESETFINGUREFUNCTION
+  C:04A2H         LINE#         227
+  C:04A2H         LINE#         228
+  C:04A5H         LINE#         232
+  -------         ENDPROC       RESETFINGUREFUNCTION
+  -------         ENDMOD        FINGURE
+
+  -------         MODULE        UART
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0090H         PUBLIC        P1
+  D:00B0H         PUBLIC        P3
+  D:00A8H         PUBLIC        IE
+  B:00A8H.4       PUBLIC        ES
+  D:00B8H         PUBLIC        IP
+  B:0098H.1       PUBLIC        TI
+BL51 BANKED LINKER/LOCATER V6.22                                                      03/07/2017  18:03:37  PAGE 7
+
+
+  C:03F3H         PUBLIC        _uartSendBuffer
+  C:04B5H         PUBLIC        uartDelay
+  D:0099H         PUBLIC        SBUF
+  D:0098H         PUBLIC        SCON
+  D:0089H         PUBLIC        TMOD
+  D:0088H         PUBLIC        TCON
+  D:008DH         PUBLIC        TH1
+  D:008BH         PUBLIC        TL1
+  C:0483H         PUBLIC        initUart
+  B:0088H.6       PUBLIC        TR1
+  C:04C6H         PUBLIC        _uartSendByte
+  B:0098H.4       PUBLIC        REN
+  D:00C8H         PUBLIC        T2CON
+  D:00D0H         PUBLIC        PSW
+  -------         PROC          INITUART
+  C:0483H         LINE#         3
+  C:0483H         LINE#         4
+  C:0486H         LINE#         5
+  C:0489H         LINE#         6
+  C:048CH         LINE#         7
+  C:048FH         LINE#         8
+  C:0492H         LINE#         9
+  C:0494H         LINE#         10
+  C:0496H         LINE#         11
+  -------         ENDPROC       INITUART
+  -------         PROC          _UARTSENDBYTE
+  D:0007H         SYMBOL        dat
+  C:04C6H         LINE#         13
+  C:04C6H         LINE#         14
+  C:04C8H         LINE#         15
+  C:04CBH         LINE#         16
+  C:04CDH         LINE#         17
+  -------         ENDPROC       _UARTSENDBYTE
+  -------         PROC          _UARTSENDBUFFER
+  D:0009H         SYMBOL        datBuffer
+  D:000CH         SYMBOL        length
+  -------         DO            
+  D:000DH         SYMBOL        pos
+  -------         ENDDO         
+  C:03F3H         LINE#         19
+  C:03FBH         LINE#         21
+  C:03FDH         LINE#         22
+  C:0407H         LINE#         23
+  C:041AH         LINE#         24
+  C:041DH         LINE#         25
+  C:0421H         LINE#         26
+  C:0423H         LINE#         27
+  -------         ENDPROC       _UARTSENDBUFFER
+  -------         PROC          UARTDELAY
+  -------         DO            
+  D:0007H         SYMBOL        pos
+  -------         ENDDO         
+  C:04B5H         LINE#         29
+  C:04B5H         LINE#         30
+  C:04B7H         LINE#         31
+  C:04BDH         LINE#         32
+  -------         ENDPROC       UARTDELAY
+BL51 BANKED LINKER/LOCATER V6.22                                                      03/07/2017  18:03:37  PAGE 8
+
+
+  -------         ENDMOD        UART
+
+  -------         MODULE        ?C?COPY
+  C:00F6H         PUBLIC        ?C?COPY
+  -------         ENDMOD        ?C?COPY
+
+  -------         MODULE        ?C?CLDPTR
+  C:011CH         PUBLIC        ?C?CLDPTR
+  -------         ENDMOD        ?C?CLDPTR
+
+  -------         MODULE        ?C?CLDOPTR
+  C:0135H         PUBLIC        ?C?CLDOPTR
+  -------         ENDMOD        ?C?CLDOPTR
+
+Program Size: data=134.0 xdata=128 code=1227
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

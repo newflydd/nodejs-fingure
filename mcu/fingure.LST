@@ -1,0 +1,268 @@
+C51 COMPILER V9.52.0.0   FINGURE                                                           03/07/2017 18:03:37 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE FINGURE
+OBJECT MODULE PLACED IN fingure.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE fingure.c BROWSE DEBUG OBJECTEXTEND TABS(2)
+
+line level    source
+
+   1          /*
+   2           * @CreateTime: Mar 3, 2017 4:25 PM 
+   3           * @Author: Smith Ding 
+   4           * @Contact: newflydd@gmail.com 
+   5           * @Last Modified By: Smith Ding
+   6           * @Last Modified Time: Mar 3, 2017 4:46 PM
+   7           * @Description: 本软件用来将面板与指纹模块进行通信
+   8           * @Company: JIANGSU SAIYANG MECHANICAL & ELECTRICAL TECHNOLOGY CO.,LTD
+   9           */
+  10          
+  11          #include <reg52.h>
+  12          #include <intrins.h>
+  13          #include "uart.h"
+  14          #include "fingure.h"
+  15          #include "event.h"
+  16          
+  17          void delay(uint num){
+  18   1          while(num--);
+  19   1      }
+  20          
+  21          //启动初始化
+  22          void initMain(){
+  23   1          //初始化发送指令前7个byte
+  24   1          int pos;
+  25   1          for(pos = 0; pos < 7; pos ++){
+  26   2              sendBuffer[pos] = sendPackageHeader[pos];
+  27   2          }
+  28   1      
+  29   1          //将串口接受寄存器的数据长度置0
+  30   1          receiveBufferLength = 0;
+  31   1      
+  32   1          EA = 1;     //总中断开关打开
+  33   1      }
+  34          
+  35          void main(){
+  36   1          initUart();
+  37   1          initMain();
+  38   1      
+  39   1          //初始化指令为:0x11，向指纹模块发送采集指纹用来验证的命令
+  40   1          sendCmdStatus = ACTION_GET_IMAGE_FOR_CHECK;
+  41   1      
+  42   1          while(1){
+  43   2              /* 主循环中首先判断是否有串口响应，如果有，则本次循环用来处理消息�
+             -�应 */
+  44   2              if(receiveCmdNotify == 1){
+  45   3                  receiveCmdNotify = 0;
+  46   3      
+  47   3                  receiveEventFunction();     //接住消息
+  48   3      
+  49   3                  //都处理完了打开REN接受串口信号，继续主循环
+  50   3                  if(!REN)
+  51   3                      REN = 1;
+  52   3                  continue;
+  53   3              }
+  54   2      
+C51 COMPILER V9.52.0.0   FINGURE                                                           03/07/2017 18:03:37 PAGE 2   
+
+  55   2              /*
+  56   2               * 如果没有串口响应
+  57   2               * 首先判断是否在等待下位机反馈，如果在等待，就开始延时计数
+  58   2               */   
+  59   2              if(waitForReceive == 1){
+  60   3                  if(waitTimes <3)
+  61   3                      waitForReceiveFunction();
+  62   3                  else
+  63   3                      resetFingureFunction();
+  64   3                  continue;
+  65   3              }
+  66   2      
+  67   2              /* 
+  68   2               * 继续判断P2口有没有录入通知
+  69   2               * 如果有录入通知，并且当前状态为验证状态，则发送录入命令
+  70   2               * 如果没有录入通知，则发送验证命令
+  71   2               */
+  72   2              inputSignal = checkInputSignal();
+  73   2              if((sendCmdStatus ==  ACTION_GET_IMAGE_FOR_CHECK) && inputSignal){
+  74   3                  sendCmdStatus = ACTION_GET_IMAGE_FOR_INPUT1;
+  75   3              }
+  76   2      
+  77   2              sendCmdFunction();
+  78   2              delay(65535);
+  79   2          }
+  80   1      }
+  81          
+  82          /**
+  83           * 串口中断函数，用来接收下位机数据
+  84           */
+  85          void serialInterruptCallback() interrupt 4 {
+  86   1        if(RI){       //本次中断是接受中断
+  87   2          RI = 0;     //接受完了清零
+  88   2      
+  89   2              //将接受到的字节追加到指令接受缓冲区
+  90   2          receiveByte = SBUF;
+  91   2          receiveBuffer[receiveBufferLength] = receiveByte;
+  92   2              receiveBufferLength++;
+  93   2      
+  94   2              if(receiveBufferLength == 9){
+  95   3                  //如果指令接受到9个byte，这时候包长度信息有了 
+  96   3                  //@TODO:接受到9个字节后，可以再判断一下包头信息是否符合要求
+  97   3                  receivePackageLength = (receiveBuffer[7] << 8) + receiveBuffer[8];
+  98   3              }else if (receiveBufferLength == 9 + receivePackageLength) {
+  99   3                  //结束一轮消息接受，清空buffer，解析命令
+ 100   3                  
+ 101   3                  //获取校验和
+ 102   3                  receiveCheckSum = (receiveBuffer[7 + receivePackageLength] << 8) + receiveBuffer[8 + receivePa
+             -ckageLength];
+ 103   3                  //获取确认码
+ 104   3                  cfmCode = receiveBuffer[9];
+ 105   3                  //获取参数
+ 106   3                  for (ucharTemp = 0; ucharTemp < receivePackageLength - 3; ucharTemp++) {
+ 107   4                      receiveParams[ucharTemp] = receiveBuffer[10 + ucharTemp];
+ 108   4                  }
+ 109   3      
+ 110   3                  //验证校验和
+ 111   3                  uintTemp = 0;
+ 112   3                  for (ucharTemp = 6; ucharTemp < receiveBufferLength - 2; ucharTemp++) {
+ 113   4                      uintTemp += receiveBuffer[ucharTemp];
+ 114   4                  }
+ 115   3                  if (uintTemp == receiveCheckSum) {
+C51 COMPILER V9.52.0.0   FINGURE                                                           03/07/2017 18:03:37 PAGE 3   
+
+ 116   4                      //校验正确，发射消息响应
+ 117   4                      receiveCmdNotify = 1;
+ 118   4      
+ 119   4                      receiveEventStatus = sendCmdStatus - 10;    //事件类型根据发送类型对应
+ 120   4                      waitForReceive = 0;                         //解除等待锁
+ 121   4                      waitTimes = 0;                              //等待响应次数复位
+ 122   4      
+ 123   4                      REN = 0;    //必须消息响应后才能继续接受，接受响应后需要人工将REN�
+             -��位为1
+ 124   4                  }
+ 125   3                  //清空指令buffer
+ 126   3                  receiveBufferLength = 0;
+ 127   3              }            
+ 128   2        }
+ 129   1      }
+ 130          
+ 131          /* 给sendBuffer变量构建发送指令 */
+ 132          void buildSendCmd(uchar* cmdAndParams, uchar capLength){
+ 133   1          uint checkSum;
+ 134   1          uchar packageLength = capLength + 2;    //包长度 = 指令集长度 + 校验和长度
+ 135   1          sendBufferLength = 11 + capLength;      // 7 + 2 + capLength + 2
+ 136   1      
+ 137   1          sendCmd = cmdAndParams[0];              //命令为第一个字节
+ 138   1      
+ 139   1          sendBuffer[7] = 0;                      //包长度高位为0x00
+ 140   1          sendBuffer[8] = packageLength;          //包长度低位为实际包长度
+ 141   1          
+ 142   1          //构建发送指令串口消息中的指令和参数
+ 143   1          for(ucharTemp = 0; ucharTemp < capLength; ucharTemp++){
+ 144   2              sendBuffer[9+ucharTemp] = cmdAndParams[ucharTemp];
+ 145   2          }
+ 146   1      
+ 147   1          checkSum = getCheckSum(packageLength, cmdAndParams, capLength);
+ 148   1          sendBuffer[9 + capLength] = checkSum>>8;
+ 149   1          sendBuffer[10 + capLength] = checkSum;
+ 150   1      }
+ 151          
+ 152          /**
+ 153           * [计算校验和]
+ 154           * @param  packageLength [包长度]
+ 155           * @param  cmdAndParams  [命令和参数数组]
+ 156           * @param  capLength     [命令和参数长度]
+ 157           * @return               [2byte 校验和]
+ 158           */
+ 159          uint getCheckSum(uchar packageLength, uchar* cmdAndParams, uchar capLength){
+ 160   1          uintTemp = packageLength;
+ 161   1          for(ucharTemp = 0; ucharTemp < capLength; ucharTemp++){
+ 162   2              uintTemp += cmdAndParams[ucharTemp];
+ 163   2          }
+ 164   1          return uintTemp + 1;
+ 165   1      }
+ 166          
+ 167          /**
+ 168           * 检查输入端口有没有录入信号（P2高4位）,录入信号需要阶段时间内维持稳定信
+             -号
+ 169           * @return 如果没有，返回0，如果有，返回P2高4位的低三位作为权限数据
+ 170           */
+ 171          uchar checkInputSignal(){
+ 172   1          uchar inputValue = GPIO_INPUT;
+ 173   1          uintTemp = 500;
+ 174   1      
+ 175   1          while(uintTemp--){
+C51 COMPILER V9.52.0.0   FINGURE                                                           03/07/2017 18:03:37 PAGE 4   
+
+ 176   2              ucharTemp = (inputValue>>4);
+ 177   2              if(!ucharTemp)
+ 178   2                  return 0x00;
+ 179   2          }
+ 180   1      
+ 181   1          return ucharTemp;
+ 182   1      }
+ 183          
+ 184          /* 根据receiveEventStatus，解析串口响应 */
+ 185          void receiveEventFunction(){
+ 186   1          switch(receiveEventStatus){
+ 187   2              case EVENT_GET_IMAGE_FOR_CHECK:
+ 188   2                  if(cfmCode == 0){
+ 189   3                      //传感器采集到指纹
+ 190   3                      sendCmdStatus = ACTION_BUILD_CB1_FOR_CHECK;
+ 191   3                  }else if(cfmCode == 2){ 
+ 192   3                      //传感器上没有手指，延时后继续发送采集命令
+ 193   3                      sendCmdStatus = ACTION_GET_IMAGE_FOR_CHECK;
+ 194   3                      delay(3000);
+ 195   3                  }
+ 196   2                  break;
+ 197   2              case 2:
+ 198   2                  break;
+ 199   2          }
+ 200   1      }
+ 201          
+ 202          /* 根据sendCmdStatus，构造发送命令 */
+ 203          void sendCmdFunction(){
+ 204   1          uchar test[] = {0x01};
+ 205   1          switch(sendCmdStatus){
+ 206   2              case ACTION_GET_IMAGE_FOR_CHECK:
+ 207   2                  buildSendCmd(test, 1);
+ 208   2                  uartSendBuffer(sendBuffer, sendBufferLength);
+ 209   2                  break;
+ 210   2              case 2:
+ 211   2                  break;
+ 212   2          }
+ 213   1      
+ 214   1          /* 发送完成后，立刻将接受等待标志置1，等待接受 */
+ 215   1          receiveEventStatus = 0;
+ 216   1          waitForReceive = 1;
+ 217   1          REN = 1;
+ 218   1      }
+ 219          
+ 220          /* 等待下位机反馈的延时计数函数 */
+ 221          void waitForReceiveFunction(){
+ 222   1          waitTimes++;
+ 223   1          delay(500);
+ 224   1      }
+ 225          
+ 226          /* 对指纹模块的复位函数 */
+ 227          void resetFingureFunction(){
+ 228   1          waitTimes = 0;
+ 229   1      
+ 230   1          //@TODO:控制引脚让指纹下位机复位
+ 231   1      
+ 232   1          delay(65535);
+ 233   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    649    ----
+C51 COMPILER V9.52.0.0   FINGURE                                                           03/07/2017 18:03:37 PAGE 5   
+
+   CONSTANT SIZE    =      8    ----
+   XDATA SIZE       =    128    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     39      10
+   IDATA SIZE       =     76    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
