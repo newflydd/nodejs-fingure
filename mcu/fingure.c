@@ -60,7 +60,7 @@ initPrograme:
         showWarning();
         goto initPrograme;
     }else{
-        P1 = 0x40;
+        //P1 = 0x40;
     }
 
     //初始化指令为:0x11，向指纹模块发送采集指纹用来验证的命令
@@ -111,8 +111,6 @@ initPrograme:
  * 串口中断函数，用来接收下位机数据
  */
 void serialInterruptCallback() interrupt 4 {
-    uchar ucit;         //中断中自己使用的uchar变量，中断中禁止使用任何全局临时变量
-    uint  uiit;         //中断中自己使用的uint 变量，中断中禁止使用任何全局临时变量
 	if(RI){				//本次中断是接受中断
 		RI = 0;			//接受完了清零
 
@@ -121,31 +119,41 @@ void serialInterruptCallback() interrupt 4 {
 		receiveBuffer[receiveBufferLength] = receiveByte;
         receiveBufferLength++;
 
-        P1 = display_code[ receiveBufferLength>>4 & 0x0F ];
-
-        if(receiveBufferLength == 1 && receiveByte!=0xEF)
+        if(receiveBufferLength == 1 && receiveByte!=0xEF){
             receiveBufferLength = 0;
+            return;
+        }
 
-        if(receiveBufferLength == 2 && receiveByte!=0x01)
+        if(receiveBufferLength == 2 && receiveByte!=0x01){
             receiveBufferLength = 0;
+            return;
+        }
 
-        if(receiveBufferLength == 3 && receiveByte!=0xFF)
+        if(receiveBufferLength == 3 && receiveByte!=0xFF){
             receiveBufferLength = 0;
+            return;
+        }
 
-        if(receiveBufferLength == 4 && receiveByte!=0xFF)
+        if(receiveBufferLength == 4 && receiveByte!=0xFF){
             receiveBufferLength = 0;
+            return;
+        }
 
-        if(receiveBufferLength == 5 && receiveByte!=0xFF)
+        if(receiveBufferLength == 5 && receiveByte!=0xFF){
             receiveBufferLength = 0;
+            return;
+        }
 
-        if(receiveBufferLength == 6 && receiveByte!=0xFF)
+        if(receiveBufferLength == 6 && receiveByte!=0xFF){
             receiveBufferLength = 0;
+            return;
+        }
 
         if(receiveBufferLength == 9){
             //如果指令接受到9个byte，这时候包长度信息有了
             receivePackageLength = (receiveBuffer[7] << 8) + receiveBuffer[8];
         }else if (receiveBufferLength == 9 + receivePackageLength) {
-            //结束一轮消息接受，清空buffer，解析命令            
+            //结束一轮消息接受，清空buffer，解析命令
             
             //获取校验和
             receiveCheckSum = (receiveBuffer[7 + receivePackageLength] << 8) + receiveBuffer[8 + receivePackageLength];
@@ -168,8 +176,6 @@ void serialInterruptCallback() interrupt 4 {
                 receiveEventStatus = sendCmdStatus - 100;    //事件类型根据发送类型对应
                 waitForReceive = 0;                          //解除等待锁
                 waitTimes = 0;                               //等待响应次数复位
-
-                REN = 0;    //必须消息响应后才能继续接受，接受响应后需要人工将REN复位为1
             }
             //清空指令buffer
             receiveBufferLength = 0;
@@ -282,8 +288,6 @@ void receiveEventFunction(){
 
 /* 根据sendCmdStatus，构造发送命令 */
 void sendCmdFunction(){
-    REN = 0;
-
     /* 串口接受的相关状态复位 */
     receiveEventStatus = 0;
     waitForReceive = 1;
@@ -294,7 +298,6 @@ void sendCmdFunction(){
             sendCmdAndParams[0] = 0x01;
             buildSendCmd(1);
             uartSendBuffer(sendBuffer, sendBufferLength);
-            REN = 1;    //发送完成后，立刻将接受等待标志置1，等待接受
             delay(65535);
             delay(65535);
             break;
@@ -303,7 +306,6 @@ void sendCmdFunction(){
             sendCmdAndParams[1] = 0x01;
             buildSendCmd(2);
             uartSendBuffer(sendBuffer, sendBufferLength);
-            REN = 1;    //发送完成后，立刻将接受等待标志置1，等待接受
             delay(65535);
             delay(65535);
             break;
@@ -316,7 +318,6 @@ void sendCmdFunction(){
             sendCmdAndParams[5] = 0xE7;
             buildSendCmd(6);
             uartSendBuffer(sendBuffer, sendBufferLength);
-            REN = 1;    //发送完成后，立刻将接受等待标志置1，等待接受
             delay(65535);
             delay(65535);
             break;
@@ -325,28 +326,24 @@ void sendCmdFunction(){
             sendCmdAndParams[1] = 0x00;
             buildSendCmd(2);
             uartSendBuffer(sendBuffer, sendBufferLength);
-            REN = 1;            
             break;
         case ACTION_GET_FINGURE_ADDRESS_LIST1:
             sendCmdAndParams[0] = 0x1F;
             sendCmdAndParams[1] = 0x01;
             buildSendCmd(2);
             uartSendBuffer(sendBuffer, sendBufferLength);
-            REN = 1;
             break;
         case ACTION_GET_FINGURE_ADDRESS_LIST2:
             sendCmdAndParams[0] = 0x1F;
             sendCmdAndParams[1] = 0x02;
             buildSendCmd(2);
             uartSendBuffer(sendBuffer, sendBufferLength);
-            REN = 1;
             break;
         case ACTION_GET_FINGURE_ADDRESS_LIST3:
             sendCmdAndParams[0] = 0x1F;
             sendCmdAndParams[1] = 0x03;
             buildSendCmd(2);
             uartSendBuffer(sendBuffer, sendBufferLength);
-            REN = 1;
             break;
     }
 }
@@ -398,11 +395,12 @@ uchar getAddressListFunction(){
 
         //从串口反馈参数中提取列表索引数据
         for(uintTemp = 1; uintTemp < 33; uintTemp++){
-            fingureAddressIndex[ut1 * 32 + uintTemp - 1] = receiveParams[uintTemp];
+            fingureAddressIndex[ ut1 * 32 + uintTemp - 1] = receiveParams[uintTemp];
         }
         sendCmdStatus++;    //将指令移到下一页
     }
 
+    P1 = 0x39;
     return 0;
 }
 

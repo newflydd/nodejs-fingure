@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   UART                                                              03/06/2017 09:56:00 PAGE 1   
+C51 COMPILER V9.52.0.0   UART                                                              03/10/2017 10:08:52 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE UART
@@ -27,12 +27,12 @@ line level    source
   18          
   19          void uartSendBuffer(uchar* datBuffer, uchar length){
   20   1          uchar pos;
-  21   1          REN = 0;
+  21   1          //REN = 0;
   22   1          for(pos = 0; pos < length; pos++){
   23   2              uartSendByte(datBuffer[pos]);
   24   2              uartDelay();
   25   2          }
-  26   1          REN = 1;
+  26   1          //REN = 1;
   27   1      }
   28          
   29          void uartDelay(){
@@ -42,7 +42,7 @@ line level    source
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =     86    ----
+   CODE SIZE        =     82    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----

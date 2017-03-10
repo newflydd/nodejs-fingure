@@ -18,12 +18,12 @@ void uartSendByte(uchar dat){
 
 void uartSendBuffer(uchar* datBuffer, uchar length){
     uchar pos;
-    REN = 0;
+    //REN = 0;
     for(pos = 0; pos < length; pos++){
         uartSendByte(datBuffer[pos]);
         uartDelay();
     }
-    REN = 1;
+    //REN = 1;
 }
 
 void uartDelay(){
