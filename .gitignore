@@ -1,0 +1,11 @@
+/.vscode
+*.hex
+*.lnp
+*.LST
+*.M51
+*.OBJ
+*.plg
+*.bak
+*.Administrator
+*.uvopt
+*.uvproj
