@@ -1,4 +1,4 @@
-BL51 BANKED LINKER/LOCATER V6.22                                                        03/10/2017  10:15:35  PAGE 1
+BL51 BANKED LINKER/LOCATER V6.22                                                        03/10/2017  16:03:05  PAGE 1
 
 
 BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
@@ -13,6 +13,7 @@ INPUT MODULES INCLUDED:
   uart.obj (UART)
   C:\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
   C:\KEIL\C51\LIB\C51S.LIB (?C?CLDOPTR)
+  C:\KEIL\C51\LIB\C51S.LIB (?C?IMUL)
   C:\KEIL\C51\LIB\C51S.LIB (?C?UIDIV)
   C:\KEIL\C51\LIB\C51S.LIB (?C_INIT)
 
@@ -28,54 +29,57 @@ LINK MAP OF MODULE:  fingure (FINGURE)
             DATA    0008H     0007H     UNIT         _DATA_GROUP_
                     000FH     0011H                  *** GAP ***
             DATA    0020H     0001H     BIT_ADDR     ?BA?FINGURE
-            DATA    0021H     0030H     UNIT         ?DT?FINGURE
-            IDATA   0051H     004CH     UNIT         ?ID?FINGURE
-            IDATA   009DH     0001H     UNIT         ?STACK
+            DATA    0021H     0033H     UNIT         ?DT?FINGURE
+            IDATA   0054H     004CH     UNIT         ?ID?FINGURE
+            IDATA   00A0H     0001H     UNIT         ?STACK
 
             * * * * * * *  X D A T A   M E M O R Y  * * * * * * *
             XDATA   0000H     0080H     UNIT         ?XD?FINGURE
 
             * * * * * * *   C O D E   M E M O R Y   * * * * * * *
             CODE    0000H     0003H     ABSOLUTE     
-            CODE    0003H     0017H     UNIT         ?CO?FINGURE
-            CODE    001AH     0009H     UNIT         ?PR?WAITFORRECEIVEFUNCTION?FINGURE
+            CODE    0003H     0019H     UNIT         ?C_INITSEG
+            CODE    001CH     0001H     UNIT         ?PR?SHOWWARNING?FINGURE
+                    001DH     0006H                  *** GAP ***
             CODE    0023H     0003H     ABSOLUTE     
-            CODE    0026H     0134H     UNIT         ?PR?SERIALINTERRUPTCALLBACK?FINGURE
-            CODE    015AH     0092H     UNIT         ?PR?RECEIVEEVENTFUNCTION?FINGURE
-            CODE    01ECH     008CH     UNIT         ?PR?SENDCMDFUNCTION?FINGURE
-            CODE    0278H     008CH     UNIT         ?C_C51STARTUP
-            CODE    0304H     0082H     UNIT         ?C?LIB_CODE
-            CODE    0386H     0080H     UNIT         ?PR?GETADDRESSLISTFUNCTION?FINGURE
-            CODE    0406H     0063H     UNIT         ?PR?MAIN?FINGURE
-            CODE    0469H     0050H     UNIT         ?PR?_BUILDSENDCMD?FINGURE
-            CODE    04B9H     003BH     UNIT         ?PR?_GETCHECKSUM?FINGURE
-            CODE    04F4H     002DH     UNIT         ?PR?_UARTSENDBUFFER?UART
-            CODE    0521H     0024H     UNIT         ?PR?_DELAY?FINGURE
-            CODE    0545H     0024H     UNIT         ?PR?CHECKINPUTSIGNAL?FINGURE
-            CODE    0569H     0022H     UNIT         ?PR?INITMAIN?FINGURE
-            CODE    058BH     0016H     UNIT         ?C_INITSEG
-            CODE    05A1H     0014H     UNIT         ?PR?INITUART?UART
-            CODE    05B5H     0009H     UNIT         ?PR?RESETFINGUREFUNCTION?FINGURE
-            CODE    05BEH     0009H     UNIT         ?PR?UARTDELAY?UART
-            CODE    05C7H     0008H     UNIT         ?PR?_UARTSENDBYTE?UART
-            CODE    05CFH     0001H     UNIT         ?PR?SHOWWARNING?FINGURE
-BL51 BANKED LINKER/LOCATER V6.22                                                      03/10/2017  10:15:35  PAGE 2
+            CODE    0026H     016EH     UNIT         ?PR?RECEIVEEVENTFUNCTION?FINGURE
+            CODE    0194H     0134H     UNIT         ?PR?SERIALINTERRUPTCALLBACK?FINGURE
+            CODE    02C8H     00E3H     UNIT         ?PR?SENDCMDFUNCTION?FINGURE
+            CODE    03ABH     0094H     UNIT         ?C?LIB_CODE
+            CODE    043FH     008CH     UNIT         ?C_C51STARTUP
+            CODE    04CBH     007CH     UNIT         ?PR?GETADDRESSLISTFUNCTION?FINGURE
+            CODE    0547H     0075H     UNIT         ?PR?_GETNEWADDRESSINDEXBYPOWER?FINGURE
+            CODE    05BCH     006AH     UNIT         ?PR?MAIN?FINGURE
+            CODE    0626H     0050H     UNIT         ?PR?_BUILDSENDCMD?FINGURE
+            CODE    0676H     003CH     UNIT         ?PR?_UPDATEFINGUREADDRESS?FINGURE
+            CODE    06B2H     003BH     UNIT         ?PR?_GETCHECKSUM?FINGURE
+            CODE    06EDH     002DH     UNIT         ?PR?_UARTSENDBUFFER?UART
+            CODE    071AH     0024H     UNIT         ?PR?_DELAY?FINGURE
+            CODE    073EH     0023H     UNIT         ?PR?CHECKINPUTSIGNAL?FINGURE
+            CODE    0761H     0022H     UNIT         ?PR?INITMAIN?FINGURE
+            CODE    0783H     0017H     UNIT         ?CO?FINGURE
+            CODE    079AH     0014H     UNIT         ?PR?INITUART?UART
+BL51 BANKED LINKER/LOCATER V6.22                                                      03/10/2017  16:03:05  PAGE 2
 
 
+            CODE    07AEH     000DH     UNIT         ?PR?RESETFINGUREFUNCTION?FINGURE
+            CODE    07BBH     0009H     UNIT         ?PR?WAITFORRECEIVEFUNCTION?FINGURE
+            CODE    07C4H     0009H     UNIT         ?PR?UARTDELAY?UART
+            CODE    07CDH     0008H     UNIT         ?PR?_UARTSENDBYTE?UART
 
 
 
 OVERLAY MAP OF MODULE:   fingure (FINGURE)
 
 
-SEGMENT                                       DATA_GROUP 
-  +--> CALLED SEGMENT                       START    LENGTH
------------------------------------------------------------
-?C_C51STARTUP                               -----    -----
+SEGMENT                                          DATA_GROUP 
+  +--> CALLED SEGMENT                          START    LENGTH
+--------------------------------------------------------------
+?C_C51STARTUP                                  -----    -----
   +--> ?PR?MAIN?FINGURE
   +--> ?C_INITSEG
 
-?PR?MAIN?FINGURE                            0008H    0001H
+?PR?MAIN?FINGURE                               0008H    0001H
   +--> ?PR?_DELAY?FINGURE
   +--> ?PR?INITUART?UART
   +--> ?PR?INITMAIN?FINGURE
@@ -85,43 +89,46 @@ SEGMENT                                       DATA_GROUP
   +--> ?PR?WAITFORRECEIVEFUNCTION?FINGURE
   +--> ?PR?RESETFINGUREFUNCTION?FINGURE
   +--> ?PR?CHECKINPUTSIGNAL?FINGURE
+  +--> ?PR?_GETNEWADDRESSINDEXBYPOWER?FINGURE
   +--> ?PR?SENDCMDFUNCTION?FINGURE
 
-?PR?INITMAIN?FINGURE                        -----    -----
+?PR?INITMAIN?FINGURE                           -----    -----
   +--> ?CO?FINGURE
 
-?PR?GETADDRESSLISTFUNCTION?FINGURE          -----    -----
+?PR?GETADDRESSLISTFUNCTION?FINGURE             -----    -----
   +--> ?PR?SENDCMDFUNCTION?FINGURE
   +--> ?PR?_DELAY?FINGURE
 
-?PR?SENDCMDFUNCTION?FINGURE                 -----    -----
+?PR?SENDCMDFUNCTION?FINGURE                    -----    -----
+  +--> ?CO?FINGURE
   +--> ?PR?_BUILDSENDCMD?FINGURE
   +--> ?PR?_UARTSENDBUFFER?UART
   +--> ?PR?_DELAY?FINGURE
 
-?PR?_BUILDSENDCMD?FINGURE                   0009H    0001H
+?PR?_BUILDSENDCMD?FINGURE                      0009H    0001H
   +--> ?PR?_GETCHECKSUM?FINGURE
 
-?PR?_GETCHECKSUM?FINGURE                    000AH    0005H
+?PR?_GETCHECKSUM?FINGURE                       000AH    0005H
 
-?PR?_UARTSENDBUFFER?UART                    0009H    0005H
+?PR?_UARTSENDBUFFER?UART                       0009H    0005H
   +--> ?PR?_UARTSENDBYTE?UART
   +--> ?PR?UARTDELAY?UART
 
-?PR?RECEIVEEVENTFUNCTION?FINGURE            -----    -----
+?PR?RECEIVEEVENTFUNCTION?FINGURE               -----    -----
   +--> ?PR?SHOWWARNING?FINGURE
   +--> ?PR?_UARTSENDBYTE?UART
   +--> ?CO?FINGURE
   +--> ?PR?_DELAY?FINGURE
+BL51 BANKED LINKER/LOCATER V6.22                                                      03/10/2017  16:03:05  PAGE 3
 
-?PR?WAITFORRECEIVEFUNCTION?FINGURE          -----    -----
+
+  +--> ?PR?_UPDATEFINGUREADDRESS?FINGURE
+
+?PR?WAITFORRECEIVEFUNCTION?FINGURE             -----    -----
   +--> ?PR?_DELAY?FINGURE
 
-?PR?RESETFINGUREFUNCTION?FINGURE            -----    -----
+?PR?RESETFINGUREFUNCTION?FINGURE               -----    -----
   +--> ?PR?_DELAY?FINGURE
-BL51 BANKED LINKER/LOCATER V6.22                                                      03/10/2017  10:15:35  PAGE 3
-
-
   +--> ?PR?INITMAIN?FINGURE
 
 
@@ -135,23 +142,25 @@ SYMBOL TABLE OF MODULE:  fingure (FINGURE)
   C:0000H         SYMBOL        _ICE_DUMMY_
   D:0021H         PUBLIC        receiveByte
   D:0022H         PUBLIC        receivePackageLength
+  D:0080H         PUBLIC        P0
   D:0024H         PUBLIC        receiveCheckSum
   D:0090H         PUBLIC        P1
-  D:00A0H         PUBLIC        P2
+  C:0547H         PUBLIC        _getNewAddressIndexByPower
   D:00B0H         PUBLIC        P3
   B:00A8H.7       PUBLIC        EA
   D:0026H         PUBLIC        sendBuffer
   D:00A8H         PUBLIC        IE
-  C:01ECH         PUBLIC        sendCmdFunction
-  C:053AH         PUBLIC        _delay
+  C:02C8H         PUBLIC        sendCmdFunction
+  C:0733H         PUBLIC        _delay
   D:0036H         PUBLIC        inputSignal
   D:00B8H         PUBLIC        IP
   D:0037H         PUBLIC        ut1
   B:0098H.0       PUBLIC        RI
-  C:05CFH         PUBLIC        showWarning
-  C:0406H         PUBLIC        main
+  C:001CH         PUBLIC        showWarning
+  C:05BCH         PUBLIC        main
+  C:0676H         PUBLIC        _updateFingureAddress
   B:0020H.1       PUBLIC        waitForReceive
-  C:0003H         PUBLIC        sendPackageHeader
+  C:0783H         PUBLIC        sendPackageHeader
   D:0038H         PUBLIC        receiveBufferLength
   D:0039H         PUBLIC        ucharTemp
   D:0099H         PUBLIC        SBUF
@@ -159,161 +168,164 @@ SYMBOL TABLE OF MODULE:  fingure (FINGURE)
   D:0098H         PUBLIC        SCON
   D:003FH         PUBLIC        cfmCode
   D:0088H         PUBLIC        TCON
-  C:0469H         PUBLIC        _buildSendCmd
+  C:0626H         PUBLIC        _buildSendCmd
   D:0040H         PUBLIC        ucit
-  C:015AH         PUBLIC        receiveEventFunction
+  C:0026H         PUBLIC        receiveEventFunction
   X:0000H         PUBLIC        fingureAddressIndex
   D:0041H         PUBLIC        uiit
   D:0043H         PUBLIC        waitTimes
-  C:0569H         PUBLIC        initMain
+  C:0761H         PUBLIC        initMain
   D:0044H         PUBLIC        sendCmdAndParams
   D:0020H         PUBLIC        bitChar
-  I:0051H         PUBLIC        receiveBuffer
-  C:05B5H         PUBLIC        resetFingureFunction
+  I:0054H         PUBLIC        receiveBuffer
+  C:07AEH         PUBLIC        resetFingureFunction
+BL51 BANKED LINKER/LOCATER V6.22                                                      03/10/2017  16:03:05  PAGE 4
+
+
   D:004AH         PUBLIC        sendCmdStatus
-  I:007DH         PUBLIC        receiveParams
+  I:0080H         PUBLIC        receiveParams
   D:004BH         PUBLIC        datByte
-  C:04B9H         PUBLIC        _getCheckSum
+  C:06B2H         PUBLIC        _getCheckSum
   D:004CH         PUBLIC        uintTemp
+  D:004EH         PUBLIC        noFingureTimesWhenInput
   D:00C8H         PUBLIC        T2CON
-  C:0026H         PUBLIC        serialInterruptCallback
-  D:004EH         PUBLIC        sendBufferLength
-  D:004FH         PUBLIC        fingureAddressPageNum
-BL51 BANKED LINKER/LOCATER V6.22                                                      03/10/2017  10:15:35  PAGE 4
-
-
-  C:001AH         PUBLIC        waitForReceiveFunction
-  D:0050H         PUBLIC        receiveEventStatus
-  C:0545H         PUBLIC        checkInputSignal
-  C:0386H         PUBLIC        getAddressListFunction
-  C:000AH         PUBLIC        display_code
+  D:004FH         PUBLIC        newFingureAddressIndex
+  C:0194H         PUBLIC        serialInterruptCallback
+  D:0051H         PUBLIC        sendBufferLength
+  D:0052H         PUBLIC        fingureAddressPageNum
+  C:07BBH         PUBLIC        waitForReceiveFunction
+  D:0053H         PUBLIC        receiveEventStatus
+  C:073EH         PUBLIC        checkInputSignal
+  C:04CBH         PUBLIC        getAddressListFunction
+  C:078AH         PUBLIC        display_code
   D:00D0H         PUBLIC        PSW
   B:0020H.0       PUBLIC        receiveCmdNotify
   B:0020H.2       PUBLIC        booleanTemp
-  C:0521H         SYMBOL        L?0109
-  C:0536H         SYMBOL        L?0110
-  -------         PROC          L?0108
-  -------         ENDPROC       L?0108
-  C:0521H         SYMBOL        L?0109
-  C:0536H         SYMBOL        L?0110
+  C:071AH         SYMBOL        L?0172
+  C:072FH         SYMBOL        L?0173
+  -------         PROC          L?0171
+  -------         ENDPROC       L?0171
+  C:071AH         SYMBOL        L?0172
+  C:072FH         SYMBOL        L?0173
   -------         PROC          _DELAY
   D:0006H         SYMBOL        num
-  C:053AH         LINE#         17
-  C:053AH         LINE#         18
-  C:0544H         LINE#         19
+  C:0733H         LINE#         17
+  C:0733H         LINE#         18
+  C:073DH         LINE#         19
   -------         ENDPROC       _DELAY
   -------         PROC          INITMAIN
-  C:0569H         LINE#         22
-  C:0569H         LINE#         24
-  C:056CH         LINE#         25
-  C:057AH         LINE#         26
-  C:0581H         LINE#         29
-  C:0584H         LINE#         32
-  C:0586H         LINE#         34
-  C:0588H         LINE#         36
-  C:058AH         LINE#         37
+  C:0761H         LINE#         22
+  C:0761H         LINE#         24
+  C:0764H         LINE#         25
+  C:0772H         LINE#         26
+  C:0779H         LINE#         29
+  C:077CH         LINE#         32
+  C:077EH         LINE#         34
+  C:0780H         LINE#         36
+  C:0782H         LINE#         37
   -------         ENDPROC       INITMAIN
   -------         PROC          MAIN
   -------         DO            
   D:0008H         SYMBOL        fingureReadable
-  C:0412H         SYMBOL        initPrograme
+  C:05C5H         SYMBOL        initPrograme
   -------         ENDDO         
-  C:0406H         LINE#         39
-  C:0406H         LINE#         40
-  C:0409H         LINE#         41
-  C:040CH         LINE#         42
-  C:040CH         LINE#         43
-  C:040CH         LINE#         44
-  C:040CH         LINE#         45
-  C:040FH         LINE#         46
-  C:040FH         LINE#         47
-  C:040FH         LINE#         48
-  C:040FH         LINE#         49
-  C:0412H         LINE#         51
-  C:0412H         LINE#         52
-  C:0415H         LINE#         53
-  C:0418H         LINE#         55
-  C:041DH         LINE#         57
-  C:0421H         LINE#         60
-  C:0424H         LINE#         61
-  C:0426H         LINE#         62
-  C:0426H         LINE#         64
-  C:0426H         LINE#         67
-BL51 BANKED LINKER/LOCATER V6.22                                                      03/10/2017  10:15:35  PAGE 5
+  C:05BCH         LINE#         39
+  C:05BCH         LINE#         40
+  C:05BFH         LINE#         41
+  C:05BFH         LINE#         42
+  C:05BFH         LINE#         43
+  C:05BFH         LINE#         44
+  C:05C2H         LINE#         45
+  C:05C2H         LINE#         46
+  C:05C2H         LINE#         47
+  C:05C2H         LINE#         48
+BL51 BANKED LINKER/LOCATER V6.22                                                      03/10/2017  16:03:05  PAGE 5
 
 
-  C:0429H         LINE#         69
-  C:0429H         LINE#         71
-  C:042CH         LINE#         72
-  C:042EH         LINE#         74
-  C:0431H         LINE#         76
-  C:0433H         LINE#         77
-  C:0433H         LINE#         83
-  C:0436H         LINE#         84
-  C:0438H         LINE#         85
-  C:043FH         LINE#         86
-  C:0444H         LINE#         88
-  C:0447H         LINE#         89
-  C:0449H         LINE#         90
-  C:0449H         LINE#         97
-  C:044EH         LINE#         98
-  C:0457H         LINE#         99
-  C:045AH         LINE#         100
-  C:045AH         LINE#         104
-  C:045DH         LINE#         105
-  C:0460H         LINE#         106
-  C:0467H         LINE#         107
+  C:05C5H         LINE#         50
+  C:05C5H         LINE#         51
+  C:05C8H         LINE#         52
+  C:05CBH         LINE#         54
+  C:05D0H         LINE#         56
+  C:05D4H         LINE#         58
+  C:05D7H         LINE#         59
+  C:05D9H         LINE#         60
+  C:05D9H         LINE#         62
+  C:05D9H         LINE#         65
+  C:05DCH         LINE#         67
+  C:05DCH         LINE#         69
+  C:05DFH         LINE#         70
+  C:05E1H         LINE#         72
+  C:05E4H         LINE#         74
+  C:05E6H         LINE#         75
+  C:05E6H         LINE#         81
+  C:05E9H         LINE#         82
+  C:05EBH         LINE#         83
+  C:05F2H         LINE#         84
+  C:05F7H         LINE#         86
+  C:05FAH         LINE#         87
+  C:05FCH         LINE#         88
+  C:05FCH         LINE#         95
+  C:0601H         LINE#         96
+  C:060AH         LINE#         97
+  C:0611H         LINE#         98
+  C:0614H         LINE#         99
+  C:0617H         LINE#         100
+  C:0617H         LINE#         104
+  C:061AH         LINE#         105
+  C:061DH         LINE#         106
+  C:0624H         LINE#         107
   -------         ENDPROC       MAIN
   -------         PROC          SERIALINTERRUPTCALLBACK
-  C:0026H         LINE#         113
-  C:0037H         LINE#         114
-  C:003DH         LINE#         115
-  C:003FH         LINE#         118
-  C:0042H         LINE#         119
-  C:0049H         LINE#         120
-  C:004BH         LINE#         122
-  C:0056H         LINE#         123
-  C:0059H         LINE#         125
-  C:0059H         LINE#         127
-  C:0064H         LINE#         128
-  C:0067H         LINE#         130
-  C:0067H         LINE#         132
-  C:0071H         LINE#         133
-  C:0074H         LINE#         135
-  C:0074H         LINE#         137
-  C:007EH         LINE#         138
-  C:0081H         LINE#         140
-  C:0081H         LINE#         142
-  C:008BH         LINE#         143
-  C:008EH         LINE#         145
-  C:008EH         LINE#         147
-  C:0098H         LINE#         148
-  C:009BH         LINE#         150
-  C:009BH         LINE#         152
-  C:00A0H         LINE#         154
-  C:00B0H         LINE#         155
-  C:00C7H         LINE#         159
-  C:00DEH         LINE#         161
-  C:00E3H         LINE#         163
-  C:00F8H         LINE#         164
-  C:0106H         LINE#         165
-  C:010AH         LINE#         168
-  C:0110H         LINE#         169
-BL51 BANKED LINKER/LOCATER V6.22                                                      03/10/2017  10:15:35  PAGE 6
+  C:0194H         LINE#         113
+  C:01A5H         LINE#         114
+  C:01ABH         LINE#         115
+  C:01ADH         LINE#         118
+  C:01B0H         LINE#         119
+  C:01B7H         LINE#         120
+  C:01B9H         LINE#         122
+  C:01C4H         LINE#         123
+  C:01C7H         LINE#         125
+  C:01C7H         LINE#         127
+  C:01D2H         LINE#         128
+  C:01D5H         LINE#         130
+  C:01D5H         LINE#         132
+  C:01DFH         LINE#         133
+  C:01E2H         LINE#         135
+  C:01E2H         LINE#         137
+  C:01ECH         LINE#         138
+  C:01EFH         LINE#         140
+  C:01EFH         LINE#         142
+  C:01F9H         LINE#         143
+  C:01FCH         LINE#         145
+  C:01FCH         LINE#         147
+BL51 BANKED LINKER/LOCATER V6.22                                                      03/10/2017  16:03:05  PAGE 6
 
 
-  C:011EH         LINE#         170
-  C:012DH         LINE#         171
-  C:0131H         LINE#         173
-  C:013BH         LINE#         175
-  C:013DH         LINE#         176
-  C:0143H         LINE#         177
-  C:0145H         LINE#         178
-  C:0148H         LINE#         179
-  C:0148H         LINE#         181
-  C:014BH         LINE#         182
-  C:014BH         LINE#         183
-  C:014BH         LINE#         184
+  C:0206H         LINE#         148
+  C:0209H         LINE#         150
+  C:0209H         LINE#         152
+  C:020EH         LINE#         154
+  C:021EH         LINE#         155
+  C:0235H         LINE#         159
+  C:024CH         LINE#         161
+  C:0251H         LINE#         163
+  C:0266H         LINE#         164
+  C:0274H         LINE#         165
+  C:0278H         LINE#         168
+  C:027EH         LINE#         169
+  C:028CH         LINE#         170
+  C:029BH         LINE#         171
+  C:029FH         LINE#         173
+  C:02A9H         LINE#         175
+  C:02ABH         LINE#         176
+  C:02B1H         LINE#         177
+  C:02B3H         LINE#         178
+  C:02B6H         LINE#         179
+  C:02B6H         LINE#         181
+  C:02B9H         LINE#         182
+  C:02B9H         LINE#         183
+  C:02B9H         LINE#         184
   -------         ENDPROC       SERIALINTERRUPTCALLBACK
   -------         PROC          _BUILDSENDCMD
   D:0009H         SYMBOL        capLength
@@ -321,200 +333,335 @@ SYMBOL TABLE OF MODULE:  fingure (FINGURE)
   D:0004H         SYMBOL        checkSum
   D:0007H         SYMBOL        packageLength
   -------         ENDDO         
-  C:0469H         LINE#         191
-  C:046BH         LINE#         193
-  C:0470H         LINE#         194
-  C:0476H         LINE#         196
-  C:0479H         LINE#         197
-  C:047BH         LINE#         200
-  C:0484H         LINE#         201
-  C:0492H         LINE#         202
-  C:0496H         LINE#         204
-  C:04A6H         LINE#         205
-  C:04AFH         LINE#         206
-  C:04B8H         LINE#         207
+  C:0626H         LINE#         191
+  C:0628H         LINE#         193
+  C:062DH         LINE#         194
+  C:0633H         LINE#         196
+  C:0636H         LINE#         197
+  C:0638H         LINE#         200
+  C:0641H         LINE#         201
+  C:064FH         LINE#         202
+  C:0653H         LINE#         204
+  C:0663H         LINE#         205
+  C:066CH         LINE#         206
+  C:0675H         LINE#         207
   -------         ENDPROC       _BUILDSENDCMD
   -------         PROC          _GETCHECKSUM
   D:0007H         SYMBOL        packageLength
   D:000BH         SYMBOL        cmdAndParams
   D:000EH         SYMBOL        capLength
-  C:04B9H         LINE#         216
-  C:04BFH         LINE#         217
-  C:04C4H         LINE#         218
-  C:04CEH         LINE#         219
-  C:04E6H         LINE#         220
-  C:04EAH         LINE#         221
-  C:04F3H         LINE#         222
+  C:06B2H         LINE#         216
+  C:06B8H         LINE#         217
+  C:06BDH         LINE#         218
+  C:06C7H         LINE#         219
+  C:06DFH         LINE#         220
+  C:06E3H         LINE#         221
+  C:06ECH         LINE#         222
   -------         ENDPROC       _GETCHECKSUM
   -------         PROC          CHECKINPUTSIGNAL
+BL51 BANKED LINKER/LOCATER V6.22                                                      03/10/2017  16:03:05  PAGE 7
+
+
   -------         DO            
   D:0007H         SYMBOL        inputValue
   -------         ENDDO         
-  C:0545H         LINE#         228
-  C:0545H         LINE#         229
-  C:0547H         LINE#         230
-  C:054DH         LINE#         232
-  C:055AH         LINE#         233
-  C:0560H         LINE#         234
-  C:0563H         LINE#         235
-  C:0566H         LINE#         236
-  C:0566H         LINE#         238
-BL51 BANKED LINKER/LOCATER V6.22                                                      03/10/2017  10:15:35  PAGE 7
-
-
-  C:0568H         LINE#         239
+  C:073EH         LINE#         229
+  C:073EH         LINE#         230
+  C:0740H         LINE#         231
+  C:0746H         LINE#         233
+  C:0753H         LINE#         234
+  C:0758H         LINE#         235
+  C:075BH         LINE#         236
+  C:075EH         LINE#         237
+  C:075EH         LINE#         239
+  C:0760H         LINE#         240
   -------         ENDPROC       CHECKINPUTSIGNAL
   -------         PROC          RECEIVEEVENTFUNCTION
-  C:015AH         LINE#         242
-  C:015AH         LINE#         243
-  C:016BH         LINE#         244
-  C:016BH         LINE#         245
-  C:016FH         LINE#         247
-  C:0172H         LINE#         248
-  C:0179H         LINE#         250
-  C:0179H         LINE#         251
-  C:0179H         LINE#         252
-  C:0179H         LINE#         253
-  C:017BH         LINE#         254
-  C:017BH         LINE#         255
-  C:017FH         LINE#         257
-  C:0182H         LINE#         258
-  C:0182H         LINE#         259
-  C:0184H         LINE#         261
-  C:0187H         LINE#         262
-  C:018AH         LINE#         263
-  C:018AH         LINE#         264
-  C:018AH         LINE#         265
-  C:018CH         LINE#         266
-  C:018CH         LINE#         267
-  C:0190H         LINE#         269
-  C:0197H         LINE#         270
-  C:019EH         LINE#         271
-  C:01A6H         LINE#         272
-  C:01ABH         LINE#         273
-  C:01B6H         LINE#         274
-  C:01C4H         LINE#         275
-  C:01D2H         LINE#         276
-  C:01D5H         LINE#         277
-  C:01D9H         LINE#         278
-  C:01DBH         LINE#         280
-  C:01DEH         LINE#         281
-  C:01E1H         LINE#         282
-  C:01E4H         LINE#         283
-  C:01EBH         LINE#         284
-  C:01EBH         LINE#         285
-  C:01EBH         LINE#         286
-  C:01EBH         LINE#         287
+  C:0026H         LINE#         243
+  C:0026H         LINE#         244
+  C:005AH         LINE#         245
+  C:005AH         LINE#         246
+  C:005EH         LINE#         248
+  C:0061H         LINE#         249
+  C:006BH         LINE#         251
+  C:006BH         LINE#         252
+  C:006BH         LINE#         253
+  C:006BH         LINE#         254
+  C:006DH         LINE#         255
+  C:006DH         LINE#         256
+  C:0071H         LINE#         258
+  C:0074H         LINE#         259
+  C:0074H         LINE#         260
+  C:0077H         LINE#         262
+  C:007AH         LINE#         263
+  C:007DH         LINE#         264
+  C:007DH         LINE#         265
+  C:007DH         LINE#         266
+  C:0080H         LINE#         267
+  C:0080H         LINE#         268
+  C:0084H         LINE#         270
+  C:008BH         LINE#         271
+  C:0092H         LINE#         272
+  C:009AH         LINE#         273
+  C:009FH         LINE#         274
+  C:00AAH         LINE#         275
+  C:00B8H         LINE#         276
+  C:00C6H         LINE#         277
+  C:00C9H         LINE#         278
+  C:00CDH         LINE#         279
+  C:00D0H         LINE#         281
+  C:00D3H         LINE#         282
+  C:00D6H         LINE#         283
+  C:00D9H         LINE#         284
+  C:00DDH         LINE#         285
+  C:00DDH         LINE#         286
+  C:00E0H         LINE#         287
+  C:00E0H         LINE#         288
+  C:00E4H         LINE#         290
+  C:00E7H         LINE#         291
+BL51 BANKED LINKER/LOCATER V6.22                                                      03/10/2017  16:03:05  PAGE 8
+
+
+  C:00E9H         LINE#         292
+  C:00F3H         LINE#         294
+  C:00F5H         LINE#         295
+  C:00FCH         LINE#         296
+  C:0101H         LINE#         298
+  C:0104H         LINE#         299
+  C:0108H         LINE#         300
+  C:0108H         LINE#         301
+  C:010BH         LINE#         302
+  C:010BH         LINE#         303
+  C:010FH         LINE#         305
+  C:0112H         LINE#         306
+  C:0112H         LINE#         307
+  C:0114H         LINE#         309
+  C:0117H         LINE#         310
+  C:011AH         LINE#         311
+  C:011EH         LINE#         312
+  C:011EH         LINE#         313
+  C:0120H         LINE#         314
+  C:0120H         LINE#         315
+  C:0124H         LINE#         317
+  C:0127H         LINE#         318
+  C:0129H         LINE#         319
+  C:0130H         LINE#         321
+  C:0132H         LINE#         322
+  C:0139H         LINE#         323
+  C:013EH         LINE#         325
+  C:0141H         LINE#         326
+  C:0145H         LINE#         327
+  C:0145H         LINE#         328
+  C:0147H         LINE#         329
+  C:0147H         LINE#         330
+  C:014BH         LINE#         332
+  C:014EH         LINE#         333
+  C:014EH         LINE#         334
+  C:0150H         LINE#         336
+  C:0153H         LINE#         337
+  C:0156H         LINE#         338
+  C:015AH         LINE#         339
+  C:015AH         LINE#         340
+  C:015CH         LINE#         341
+  C:015CH         LINE#         342
+  C:0160H         LINE#         344
+  C:0163H         LINE#         345
+  C:0163H         LINE#         346
+  C:0165H         LINE#         348
+  C:0168H         LINE#         349
+  C:016BH         LINE#         350
+  C:016FH         LINE#         351
+  C:016FH         LINE#         352
+  C:0171H         LINE#         353
+  C:0171H         LINE#         354
+  C:0175H         LINE#         356
+  C:0178H         LINE#         357
+  C:017FH         LINE#         358
+  C:0186H         LINE#         359
+  C:0186H         LINE#         361
+BL51 BANKED LINKER/LOCATER V6.22                                                      03/10/2017  16:03:05  PAGE 9
+
+
+  C:0189H         LINE#         362
+  C:018CH         LINE#         363
+  C:0193H         LINE#         364
+  C:0193H         LINE#         365
+  C:0193H         LINE#         366
+  C:0193H         LINE#         367
   -------         ENDPROC       RECEIVEEVENTFUNCTION
   -------         PROC          SENDCMDFUNCTION
-  C:01ECH         LINE#         290
-  C:01ECH         LINE#         292
-  C:01EFH         LINE#         293
-  C:01F1H         LINE#         294
-  C:01F3H         LINE#         296
-  C:020DH         LINE#         297
-  C:020DH         LINE#         298
-  C:0210H         LINE#         299
-  C:0212H         LINE#         300
-  C:0212H         LINE#         301
-  C:0212H         LINE#         302
-  C:0212H         LINE#         303
-BL51 BANKED LINKER/LOCATER V6.22                                                      03/10/2017  10:15:35  PAGE 8
+  C:02C8H         LINE#         370
+  C:02C8H         LINE#         372
+  C:02CBH         LINE#         373
+  C:02CDH         LINE#         374
+  C:02CFH         LINE#         376
+  C:0310H         LINE#         377
+  C:0310H         LINE#         378
+  C:0313H         LINE#         379
+  C:0313H         LINE#         380
+  C:0313H         LINE#         381
+  C:0313H         LINE#         382
+  C:0313H         LINE#         383
+  C:0315H         LINE#         384
+  C:0315H         LINE#         385
+  C:0315H         LINE#         386
+  C:0315H         LINE#         387
+  C:0315H         LINE#         388
+  C:0315H         LINE#         389
+  C:0315H         LINE#         390
+  C:0317H         LINE#         391
+  C:0317H         LINE#         392
+  C:031AH         LINE#         393
+  C:031DH         LINE#         394
+  C:0320H         LINE#         395
+  C:0322H         LINE#         396
+  C:0325H         LINE#         397
+  C:0328H         LINE#         398
+  C:032AH         LINE#         399
+  C:032AH         LINE#         400
+  C:032AH         LINE#         401
+  C:032CH         LINE#         402
+  C:032CH         LINE#         403
+  C:032FH         LINE#         404
+  C:0332H         LINE#         405
+  C:0332H         LINE#         406
+  C:0332H         LINE#         407
+  C:0334H         LINE#         408
+  C:0334H         LINE#         409
+  C:0337H         LINE#         410
+  C:033AH         LINE#         411
+  C:033AH         LINE#         412
+  C:033AH         LINE#         413
+  C:033CH         LINE#         414
+  C:033CH         LINE#         415
+  C:033FH         LINE#         416
+  C:0342H         LINE#         417
+  C:0342H         LINE#         418
+  C:0342H         LINE#         419
+  C:0344H         LINE#         420
+BL51 BANKED LINKER/LOCATER V6.22                                                      03/10/2017  16:03:05  PAGE 10
 
 
-  C:0214H         LINE#         304
-  C:0214H         LINE#         305
-  C:0217H         LINE#         306
-  C:021AH         LINE#         307
-  C:021CH         LINE#         308
-  C:021CH         LINE#         309
-  C:021CH         LINE#         310
-  C:021CH         LINE#         311
-  C:021EH         LINE#         312
-  C:021EH         LINE#         313
-  C:0221H         LINE#         314
-  C:0224H         LINE#         315
-  C:0227H         LINE#         316
-  C:0229H         LINE#         317
-  C:022CH         LINE#         318
-  C:022FH         LINE#         319
-  C:0234H         LINE#         320
-  C:023FH         LINE#         321
-  C:0242H         LINE#         322
-  C:0249H         LINE#         323
-  C:0249H         LINE#         324
-  C:0249H         LINE#         325
-  C:024CH         LINE#         326
-  C:024FH         LINE#         327
-  C:024FH         LINE#         328
-  C:024FH         LINE#         329
-  C:0251H         LINE#         330
-  C:0251H         LINE#         331
-  C:0254H         LINE#         332
-  C:0257H         LINE#         333
-  C:0257H         LINE#         334
-  C:0257H         LINE#         335
-  C:0259H         LINE#         336
-  C:0259H         LINE#         337
-  C:025CH         LINE#         338
-  C:025FH         LINE#         339
-  C:025FH         LINE#         340
-  C:025FH         LINE#         341
-  C:0261H         LINE#         342
-  C:0261H         LINE#         343
-  C:0264H         LINE#         344
-  C:0267H         LINE#         345
-  C:026CH         LINE#         346
-  C:0277H         LINE#         347
-  C:0277H         LINE#         348
-  C:0277H         LINE#         349
+  C:0344H         LINE#         421
+  C:0347H         LINE#         422
+  C:034AH         LINE#         423
+  C:034FH         LINE#         424
+  C:035AH         LINE#         425
+  C:035AH         LINE#         426
+  C:035AH         LINE#         427
+  C:0361H         LINE#         428
+  C:0364H         LINE#         429
+  C:0366H         LINE#         430
+  C:0366H         LINE#         431
+  C:0366H         LINE#         432
+  C:0368H         LINE#         433
+  C:0368H         LINE#         434
+  C:036BH         LINE#         435
+  C:036DH         LINE#         436
+  C:036DH         LINE#         437
+  C:036DH         LINE#         438
+  C:036FH         LINE#         439
+  C:0372H         LINE#         441
+  C:0375H         LINE#         442
+  C:0377H         LINE#         443
+  C:0377H         LINE#         444
+  C:0377H         LINE#         445
+  C:0379H         LINE#         446
+  C:0379H         LINE#         447
+  C:037CH         LINE#         448
+  C:037FH         LINE#         449
+  C:0381H         LINE#         450
+  C:0381H         LINE#         451
+  C:0381H         LINE#         452
+  C:0383H         LINE#         453
+  C:0383H         LINE#         454
+  C:0386H         LINE#         455
+  C:0388H         LINE#         456
+  C:0388H         LINE#         457
+  C:0388H         LINE#         458
+  C:038AH         LINE#         459
+  C:038AH         LINE#         460
+  C:038DH         LINE#         461
+  C:0390H         LINE#         462
+  C:0394H         LINE#         463
+  C:0397H         LINE#         464
+  C:039CH         LINE#         465
+  C:03A7H         LINE#         466
+  C:03AAH         LINE#         467
+  C:03AAH         LINE#         468
+  C:03AAH         LINE#         469
   -------         ENDPROC       SENDCMDFUNCTION
   -------         PROC          WAITFORRECEIVEFUNCTION
-  C:001AH         LINE#         352
-  C:001AH         LINE#         353
-  C:001CH         LINE#         354
+  C:07BBH         LINE#         472
+  C:07BBH         LINE#         473
+  C:07BDH         LINE#         474
   -------         ENDPROC       WAITFORRECEIVEFUNCTION
   -------         PROC          RESETFINGUREFUNCTION
-  C:05B5H         LINE#         358
-  C:05B5H         LINE#         359
-  C:05B8H         LINE#         363
-  C:05B8H         LINE#         364
-BL51 BANKED LINKER/LOCATER V6.22                                                      03/10/2017  10:15:35  PAGE 9
+  C:07AEH         LINE#         478
+  C:07AEH         LINE#         479
+BL51 BANKED LINKER/LOCATER V6.22                                                      03/10/2017  16:03:05  PAGE 11
 
 
-  C:05B8H         LINE#         365
-  C:05B8H         LINE#         366
-  C:05BBH         LINE#         368
+  C:07B1H         LINE#         483
+  C:07B1H         LINE#         484
+  C:07B1H         LINE#         485
+  C:07B1H         LINE#         486
+  C:07B4H         LINE#         488
+  C:07B7H         LINE#         489
+  C:07BAH         LINE#         490
   -------         ENDPROC       RESETFINGUREFUNCTION
   -------         PROC          GETADDRESSLISTFUNCTION
-  C:0386H         LINE#         375
-  C:0386H         LINE#         376
-  C:0389H         LINE#         378
-  C:038CH         LINE#         379
-  C:038FH         LINE#         381
-  C:0392H         LINE#         382
-  C:0395H         LINE#         383
-  C:0398H         LINE#         384
-  C:039BH         LINE#         385
-  C:039EH         LINE#         386
-  C:03A1H         LINE#         387
-  C:03A4H         LINE#         388
-  C:03A7H         LINE#         391
-  C:03AAH         LINE#         392
-  C:03ADH         LINE#         393
-  C:03B9H         LINE#         394
-  C:03BCH         LINE#         397
-  C:03C2H         LINE#         398
-  C:03E7H         LINE#         399
-  C:03F5H         LINE#         400
-  C:03F7H         LINE#         401
-  C:0400H         LINE#         403
-  C:0403H         LINE#         404
-  C:0405H         LINE#         405
+  C:04CBH         LINE#         496
+  C:04CBH         LINE#         497
+  C:04CEH         LINE#         499
+  C:04D1H         LINE#         500
+  C:04D4H         LINE#         502
+  C:04D7H         LINE#         503
+  C:04DAH         LINE#         504
+  C:04DDH         LINE#         505
+  C:04E0H         LINE#         506
+  C:04E3H         LINE#         507
+  C:04E6H         LINE#         508
+  C:04E9H         LINE#         509
+  C:04ECH         LINE#         512
+  C:04EFH         LINE#         513
+  C:04F2H         LINE#         514
+  C:04FEH         LINE#         515
+  C:0501H         LINE#         518
+  C:0506H         LINE#         519
+  C:052BH         LINE#         520
+  C:0539H         LINE#         521
+  C:053BH         LINE#         522
+  C:0544H         LINE#         524
+  C:0546H         LINE#         525
   -------         ENDPROC       GETADDRESSLISTFUNCTION
+  -------         PROC          _GETNEWADDRESSINDEXBYPOWER
+  D:0007H         SYMBOL        power
+  C:0547H         LINE#         532
+  C:0547H         LINE#         533
+  C:055AH         LINE#         534
+  C:0581H         LINE#         535
+  C:0586H         LINE#         536
+  C:058EH         LINE#         537
+  C:05B5H         LINE#         538
+  C:05B7H         LINE#         539
+  C:05BBH         LINE#         540
+  -------         ENDPROC       _GETNEWADDRESSINDEXBYPOWER
+  -------         PROC          _UPDATEFINGUREADDRESS
+  D:0004H         SYMBOL        address
+  C:0676H         LINE#         547
+  C:067AH         LINE#         548
+  C:0691H         LINE#         549
+  C:06A2H         LINE#         550
+  C:06A4H         LINE#         551
+  C:06B1H         LINE#         552
+  -------         ENDPROC       _UPDATEFINGUREADDRESS
   -------         PROC          SHOWWARNING
-  C:05CFH         LINE#         408
-  C:05CFH         LINE#         410
+  C:001CH         LINE#         555
+  C:001CH         LINE#         557
+BL51 BANKED LINKER/LOCATER V6.22                                                      03/10/2017  16:03:05  PAGE 12
+
+
   -------         ENDPROC       SHOWWARNING
   -------         ENDMOD        FINGURE
 
@@ -526,40 +673,37 @@ SYMBOL TABLE OF MODULE:  fingure (FINGURE)
   B:00A8H.4       PUBLIC        ES
   D:00B8H         PUBLIC        IP
   B:0098H.1       PUBLIC        TI
-  C:04F4H         PUBLIC        _uartSendBuffer
-  C:05BEH         PUBLIC        uartDelay
+  C:06EDH         PUBLIC        _uartSendBuffer
+  C:07C4H         PUBLIC        uartDelay
   D:0099H         PUBLIC        SBUF
   D:0098H         PUBLIC        SCON
   D:0089H         PUBLIC        TMOD
   D:0088H         PUBLIC        TCON
   D:008DH         PUBLIC        TH1
   D:008BH         PUBLIC        TL1
-  C:05A1H         PUBLIC        initUart
+  C:079AH         PUBLIC        initUart
   B:0088H.6       PUBLIC        TR1
-  C:05C7H         PUBLIC        _uartSendByte
+  C:07CDH         PUBLIC        _uartSendByte
   D:00C8H         PUBLIC        T2CON
   D:00D0H         PUBLIC        PSW
-BL51 BANKED LINKER/LOCATER V6.22                                                      03/10/2017  10:15:35  PAGE 10
-
-
   -------         PROC          INITUART
-  C:05A1H         LINE#         3
-  C:05A1H         LINE#         4
-  C:05A4H         LINE#         5
-  C:05A7H         LINE#         6
-  C:05AAH         LINE#         7
-  C:05ADH         LINE#         8
-  C:05B0H         LINE#         9
-  C:05B2H         LINE#         10
-  C:05B4H         LINE#         11
+  C:079AH         LINE#         3
+  C:079AH         LINE#         4
+  C:079DH         LINE#         5
+  C:07A0H         LINE#         6
+  C:07A3H         LINE#         7
+  C:07A6H         LINE#         8
+  C:07A9H         LINE#         9
+  C:07ABH         LINE#         10
+  C:07ADH         LINE#         11
   -------         ENDPROC       INITUART
   -------         PROC          _UARTSENDBYTE
   D:0007H         SYMBOL        dat
-  C:05C7H         LINE#         13
-  C:05C7H         LINE#         14
-  C:05C9H         LINE#         15
-  C:05CCH         LINE#         16
-  C:05CEH         LINE#         17
+  C:07CDH         LINE#         13
+  C:07CDH         LINE#         14
+  C:07CFH         LINE#         15
+  C:07D2H         LINE#         16
+  C:07D4H         LINE#         17
   -------         ENDPROC       _UARTSENDBYTE
   -------         PROC          _UARTSENDBUFFER
   D:0009H         SYMBOL        datBuffer
@@ -567,31 +711,38 @@ SYMBOL TABLE OF MODULE:  fingure (FINGURE)
   -------         DO            
   D:000DH         SYMBOL        pos
   -------         ENDDO         
-  C:04F4H         LINE#         19
-  C:04FCH         LINE#         22
-  C:0506H         LINE#         23
-  C:0519H         LINE#         24
-  C:051CH         LINE#         25
-  C:0520H         LINE#         27
+  C:06EDH         LINE#         19
+  C:06F5H         LINE#         22
+  C:06FFH         LINE#         23
+  C:0712H         LINE#         24
+  C:0715H         LINE#         25
+  C:0719H         LINE#         27
   -------         ENDPROC       _UARTSENDBUFFER
   -------         PROC          UARTDELAY
+BL51 BANKED LINKER/LOCATER V6.22                                                      03/10/2017  16:03:05  PAGE 13
+
+
   -------         DO            
   D:0007H         SYMBOL        pos
   -------         ENDDO         
-  C:05BEH         LINE#         29
-  C:05BEH         LINE#         30
-  C:05C0H         LINE#         31
-  C:05C6H         LINE#         32
+  C:07C4H         LINE#         29
+  C:07C4H         LINE#         30
+  C:07C6H         LINE#         31
+  C:07CCH         LINE#         32
   -------         ENDPROC       UARTDELAY
   -------         ENDMOD        UART
 
   -------         MODULE        ?C?CLDOPTR
-  C:0304H         PUBLIC        ?C?CLDOPTR
+  C:03ABH         PUBLIC        ?C?CLDOPTR
   -------         ENDMOD        ?C?CLDOPTR
 
+  -------         MODULE        ?C?IMUL
+  C:03D8H         PUBLIC        ?C?IMUL
+  -------         ENDMOD        ?C?IMUL
+
   -------         MODULE        ?C?UIDIV
-  C:0331H         PUBLIC        ?C?UIDIV
+  C:03EAH         PUBLIC        ?C?UIDIV
   -------         ENDMOD        ?C?UIDIV
 
-Program Size: data=141.0 xdata=128 code=1488
+Program Size: data=144.0 xdata=128 code=1999
 LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

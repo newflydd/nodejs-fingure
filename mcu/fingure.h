@@ -13,7 +13,11 @@
 #define uint unsigned int
 #endif
 
-#define GPIO_INPUT P2
+//@TODO:临时信号量
+#define GPIO_INPUT P0
+
+//录入指纹时如果没有手指放上去，最大重复次数
+#define NO_FINGURE_WHEN_INPUT_MAX_TIME 30
 
 /* 发送包的包头 */
 uchar code sendPackageHeader[] = {0xEF, 0x01, 0xFF, 0xFF, 0xFF, 0xFF, 0x01};
@@ -43,9 +47,11 @@ uchar receiveEventStatus = 0;		//当前接受的事件类型，0：没有任何�
 uchar sendCmdStatus = 0;			//当前发送的命令类型，0：没有发送任务， >=1时表示需要发送命令给下位机		
 uchar inputSignal = 0;				//P2输入位的录入通知
 uchar waitTimes = 0;				//等待次数，大于3次时需要复位
+uchar noFingureTimesWhenInput = 0;	//录入指纹时，没有手指时的尝试次数
 
 uchar xdata fingureAddressIndex[128];	//指纹库分页存储列表，按bit查找，1：该位置有指纹存储，0：该位置没有指纹存储
 uchar fingureAddressPageNum;			//指纹库分页存储片选标记，0-3
+uint  newFingureAddressIndex;			//根据权限计算出来的空白的存储地址
 
 uchar ucharTemp,ut1;				//重复利用的uchar类型临时变量
 uint  uintTemp;						//重复利用的uint类型临时变量
@@ -77,6 +83,10 @@ void sendCmdFunction();
 
 /* 获取指纹模块的有效指纹列表 */
 uchar getAddressListFunction();
+/* 根据内存中的指纹库，和传入的权限，构造一个新的未使用的指纹索引 */
+uint  getNewAddressIndexByPower(uchar); 
+/* 更新指纹库，将指定位置的bit置为1 */
+void  updateFingureAddress(uint);
 
 /* 交互反馈 */
 void showWarning();

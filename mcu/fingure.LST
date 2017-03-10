@@ -1,4 +1,4 @@
-C51 COMPILER V9.52.0.0   FINGURE                                                           03/10/2017 10:15:35 PAGE 1   
+C51 COMPILER V9.52.0.0   FINGURE                                                           03/10/2017 16:03:05 PAGE 1   
 
 
 C51 COMPILER V9.52.0.0, COMPILATION OF MODULE FINGURE
@@ -47,7 +47,7 @@ line level    source
   38          
   39          void main(){    
   40   1          uchar fingureReadable = 1;      //下位机指纹模块连接性，0时代表可准确连接
-  41   1          P1 = 0x3F;                      //@TODO:临时将数码管置0
+  41   1          delay(65535);
   42   1          delay(65535);
   43   1          delay(65535);
   44   1          delay(65535);
@@ -55,59 +55,61 @@ line level    source
   46   1          delay(65535);
   47   1          delay(65535);
   48   1          delay(65535);
-  49   1          delay(65535);
-  50   1      
-  51   1      initPrograme:
-  52   1          initUart();
-  53   1          initMain();
-  54   1      
-  55   1          fingureReadable = getAddressListFunction();
-C51 COMPILER V9.52.0.0   FINGURE                                                           03/10/2017 10:15:35 PAGE 2   
+  49   1      
+  50   1      initPrograme:
+  51   1          initUart();
+  52   1          initMain();
+  53   1      
+  54   1          fingureReadable = getAddressListFunction();
+  55   1      
+C51 COMPILER V9.52.0.0   FINGURE                                                           03/10/2017 16:03:05 PAGE 2   
 
-  56   1      
-  57   1          if(fingureReadable){
-  58   2              //@TODO: 异常警报
-  59   2              //P1 = display_code[fingureReadable];
-  60   2              showWarning();
-  61   2              goto initPrograme;
-  62   2          }else{
-  63   2              //P1 = 0x40;
-  64   2          }
-  65   1      
-  66   1          //初始化指令为:0x11，向指纹模块发送采集指纹用来验证的命令
-  67   1          sendCmdStatus = ACTION_GET_IMAGE_FOR_CHECK;
-  68   1      
-  69   1          while(1){
-  70   2              /* 主循环中首先判断是否有串口响应，如果有，则本次循环用来处理消息�
+  56   1          if(fingureReadable){
+  57   2              //@TODO: 异常警报
+  58   2              showWarning();
+  59   2              goto initPrograme;
+  60   2          }else{
+  61   2              //P1 = 0x40;
+  62   2          }
+  63   1      
+  64   1          //初始化指令为:0x11，向指纹模块发送采集指纹用来验证的命令
+  65   1          sendCmdStatus = ACTION_GET_IMAGE_FOR_CHECK;
+  66   1      
+  67   1          while(1){
+  68   2              /* 主循环中首先判断是否有串口响应，如果有，则本次循环用来处理消息�
              -�应 */
-  71   2              if(receiveCmdNotify == 1){
-  72   3                  receiveCmdNotify = 0;
+  69   2              if(receiveCmdNotify == 1){
+  70   3                  receiveCmdNotify = 0;
+  71   3      
+  72   3                  receiveEventFunction();     //接住消息
   73   3      
-  74   3                  receiveEventFunction();     //接住消息
-  75   3      
-  76   3                  continue;
-  77   3              }
-  78   2      
-  79   2              /*
-  80   2               * 如果没有串口响应
-  81   2               * 首先判断是否在等待下位机反馈，如果在等待，就开始延时计数
-  82   2               */   
-  83   2              if(waitForReceive == 1){
-  84   3                  waitForReceive = 0;
-  85   3                  if(waitTimes < 3)
-  86   3                      waitForReceiveFunction();
-  87   3                  else
-  88   3                      resetFingureFunction();
-  89   3                  continue;
-  90   3              }
-  91   2      
-  92   2              /* 
-  93   2               * 继续判断P2口有没有录入通知
-  94   2               * 如果有录入通知，并且当前状态为验证状态，则发送录入命令
-  95   2               * 如果没有录入通知，则发送验证命令
-  96   2               */
-  97   2              inputSignal = checkInputSignal();
-  98   2              if((sendCmdStatus ==  ACTION_GET_IMAGE_FOR_CHECK) && inputSignal){
+  74   3                  continue;
+  75   3              }
+  76   2      
+  77   2              /*
+  78   2               * 如果没有串口响应
+  79   2               * 首先判断是否在等待下位机反馈，如果在等待，就开始延时计数
+  80   2               */   
+  81   2              if(waitForReceive == 1){
+  82   3                  waitForReceive = 0;
+  83   3                  if(waitTimes < 3)
+  84   3                      waitForReceiveFunction();
+  85   3                  else
+  86   3                      resetFingureFunction();
+  87   3                  continue;
+  88   3              }
+  89   2      
+  90   2              /* 
+  91   2               * 继续判断P2口有没有录入通知
+  92   2               * 如果有录入通知，并且当前状态为验证状态，则发送录入命令
+  93   2               * 如果没有录入通知，则发送验证命令
+  94   2               */
+  95   2              inputSignal = checkInputSignal();
+  96   2              if((sendCmdStatus ==  ACTION_GET_IMAGE_FOR_CHECK) && inputSignal){
+  97   3                  newFingureAddressIndex = getNewAddressIndexByPower(inputSignal);    //通过权限来构造一
+             -个空位置
+  98   3                  noFingureTimesWhenInput = 0;                                 //将录入指纹时的重复次�
+             -��归零
   99   3                  sendCmdStatus = ACTION_GET_IMAGE_FOR_INPUT1;
  100   3              }
  101   2      
@@ -124,10 +126,10 @@ line level    source
  112           */
  113          void serialInterruptCallback() interrupt 4 {
  114   1        if(RI){       //本次中断是接受中断
+C51 COMPILER V9.52.0.0   FINGURE                                                           03/10/2017 16:03:05 PAGE 3   
+
  115   2          RI = 0;     //接受完了清零
  116   2      
-C51 COMPILER V9.52.0.0   FINGURE                                                           03/10/2017 10:15:35 PAGE 3   
-
  117   2              //将接受到的字节追加到指令接受缓冲区
  118   2          receiveByte = SBUF;
  119   2          receiveBuffer[receiveBufferLength] = receiveByte;
@@ -188,10 +190,10 @@ line level    source
  173   3                  if (uiit == receiveCheckSum) {
  174   4                      //校验正确，发射消息响应
  175   4                      receiveCmdNotify = 1;
+C51 COMPILER V9.52.0.0   FINGURE                                                           03/10/2017 16:03:05 PAGE 4   
+
  176   4                      receiveEventStatus = sendCmdStatus - 100;    //事件类型根据发送类型对应
  177   4                      waitForReceive = 0;                          //解除等待锁
-C51 COMPILER V9.52.0.0   FINGURE                                                           03/10/2017 10:15:35 PAGE 4   
-
  178   4                      waitTimes = 0;                               //等待响应次数复位
  179   4                  }
  180   3                  //清空指令buffer
@@ -239,207 +241,362 @@ line level    source
  222   1      }
  223          
  224          /**
- 225           * 检查输入端口有没有录入信号（P2高4位）,录入信号需要阶段时间内维持稳定信
+ 225           * @TODO:临时模拟信号
+ 226           * 检查输入端口有没有录入信号（P2高4位）,录入信号需要阶段时间内维持稳定信
              -号
- 226           * @return 如果没有，返回0，如果有，返回P2高4位的低三位作为权限数据
- 227           */
- 228          uchar checkInputSignal(){
- 229   1          uchar inputValue = GPIO_INPUT;
- 230   1          uintTemp = 500;
- 231   1      
- 232   1          while(uintTemp--){
- 233   2              ucharTemp = (inputValue>>4);
- 234   2              if(ucharTemp == 0x0F)
- 235   2                  return 0x00;
- 236   2          }
- 237   1      
- 238   1          return ucharTemp;
-C51 COMPILER V9.52.0.0   FINGURE                                                           03/10/2017 10:15:35 PAGE 5   
+ 227           * @return 如果没有，返回0，如果有，返回P2高4位的低三位作为权限数据
+ 228           */
+ 229          uchar checkInputSignal(){
+ 230   1          uchar inputValue = GPIO_INPUT;
+ 231   1          uintTemp = 500;
+ 232   1      
+ 233   1          while(uintTemp--){
+ 234   2              ucharTemp = (inputValue<<1);
+ 235   2              if((ucharTemp & 0x80) == 0x80)
+ 236   2                  return 0x00;
+C51 COMPILER V9.52.0.0   FINGURE                                                           03/10/2017 16:03:05 PAGE 5   
 
- 239   1      }
- 240          
- 241          /* 根据receiveEventStatus，解析串口响应 */
- 242          void receiveEventFunction(){
- 243   1          switch(receiveEventStatus){
- 244   2              case EVENT_GET_IMAGE_FOR_CHECK:
- 245   2                  if(cfmCode == 0){
- 246   3                      //传感器采集到指纹
- 247   3                      sendCmdStatus = ACTION_BUILD_CB1_FOR_CHECK;
- 248   3                  }else if(cfmCode == 2){ 
- 249   3                      //传感器上没有手指，延时后继续发送采集命令
- 250   3                      sendCmdStatus = ACTION_GET_IMAGE_FOR_CHECK;
- 251   3                      delay(3000);
- 252   3                  }
- 253   2                  break;
- 254   2              case EVENT_BUILD_CB1_FOR_CHECK:
- 255   2                  if(cfmCode == 0){
- 256   3                      //生成特征码成功
- 257   3                      sendCmdStatus = ACTION_SEARCH;
- 258   3                      delay(3000);
- 259   3                  }else{
- 260   3                      //生成特征码失败
- 261   3                      showWarning();
- 262   3                      sendCmdStatus = ACTION_GET_IMAGE_FOR_CHECK;
- 263   3                      delay(3000);
- 264   3                  }
- 265   2                  break;
- 266   2              case EVETN_SEARCH:
- 267   2                  if(cfmCode == 0){
- 268   3                      //@TODO:搜索到匹配指纹
- 269   3                      uartSendByte(receiveParams[0]);
- 270   3                      uartSendByte(receiveParams[1]);
- 271   3                      uintTemp = receiveParams[0];
- 272   3                      uintTemp = uintTemp<<8;
- 273   3                      uintTemp += receiveParams[1];
- 274   3                      uintTemp = uintTemp / 100;
- 275   3                      P1 = display_code[uintTemp + 1];
- 276   3                      sendCmdStatus = ACTION_GET_IMAGE_FOR_CHECK;
- 277   3                      delay(65535);
- 278   3                  }else{
- 279   3                      //搜索失败
- 280   3                      showWarning();
- 281   3                      P1 = 0x3F;
- 282   3                      sendCmdStatus = ACTION_GET_IMAGE_FOR_CHECK;
- 283   3                      delay(3000);    
- 284   3                  }
- 285   2                  break;
- 286   2          }
- 287   1      }
- 288          
- 289          /* 根据sendCmdStatus，构造发送命令 */
- 290          void sendCmdFunction(){
- 291   1          /* 串口接受的相关状态复位 */
- 292   1          receiveEventStatus = 0;
- 293   1          waitForReceive = 1;
- 294   1          receiveBufferLength = 0;
- 295   1      
- 296   1          switch(sendCmdStatus){
- 297   2              case ACTION_GET_IMAGE_FOR_CHECK:
- 298   2                  sendCmdAndParams[0] = 0x01;
- 299   2                  buildSendCmd(1);
- 300   2                  uartSendBuffer(sendBuffer, sendBufferLength);
-C51 COMPILER V9.52.0.0   FINGURE                                                           03/10/2017 10:15:35 PAGE 6   
+ 237   2          }
+ 238   1      
+ 239   1          return 0x05;
+ 240   1      }
+ 241          
+ 242          /* 根据receiveEventStatus，解析串口响应 */
+ 243          void receiveEventFunction(){
+ 244   1          switch(receiveEventStatus){
+ 245   2              case EVENT_GET_IMAGE_FOR_CHECK:
+ 246   2                  if(cfmCode == 0){
+ 247   3                      //传感器采集到指纹
+ 248   3                      sendCmdStatus = ACTION_BUILD_CB1_FOR_CHECK;
+ 249   3                  }else if(cfmCode == 2){ 
+ 250   3                      //传感器上没有手指，延时后继续发送采集命令
+ 251   3                      sendCmdStatus = ACTION_GET_IMAGE_FOR_CHECK;
+ 252   3                      delay(3000);
+ 253   3                  }
+ 254   2                  break;
+ 255   2              case EVENT_BUILD_CB1_FOR_CHECK:
+ 256   2                  if(cfmCode == 0){
+ 257   3                      //生成特征码成功
+ 258   3                      sendCmdStatus = ACTION_SEARCH;
+ 259   3                      delay(3000);
+ 260   3                  }else{
+ 261   3                      //生成特征码失败
+ 262   3                      showWarning();
+ 263   3                      sendCmdStatus = ACTION_GET_IMAGE_FOR_CHECK;
+ 264   3                      delay(3000);
+ 265   3                  }
+ 266   2                  break;
+ 267   2              case EVETN_SEARCH:
+ 268   2                  if(cfmCode == 0){
+ 269   3                      //@TODO:搜索到匹配指纹
+ 270   3                      uartSendByte(receiveParams[0]);
+ 271   3                      uartSendByte(receiveParams[1]);
+ 272   3                      uintTemp = receiveParams[0];
+ 273   3                      uintTemp = uintTemp<<8;
+ 274   3                      uintTemp += receiveParams[1];
+ 275   3                      uintTemp = uintTemp / 100;
+ 276   3                      P1 = display_code[uintTemp + 1];
+ 277   3                      sendCmdStatus = ACTION_GET_IMAGE_FOR_CHECK;
+ 278   3                      delay(65535);
+ 279   3                  }else{
+ 280   3                      //搜索失败
+ 281   3                      showWarning();
+ 282   3                      P1 = 0x3F;
+ 283   3                      sendCmdStatus = ACTION_GET_IMAGE_FOR_CHECK;
+ 284   3                      delay(3000);    
+ 285   3                  }
+ 286   2                  break;
+ 287   2              case EVENT_GET_IMAGE_FOR_INPUT1:
+ 288   2                  if(cfmCode == 0){
+ 289   3                      //传感器采集到指纹
+ 290   3                      sendCmdStatus = ACTION_BUILD_CB1_FOR_INPUT;
+ 291   3                      noFingureTimesWhenInput = 0;        //录入时没有指纹的次数归零
+ 292   3                  }else if(cfmCode == 2){ 
+ 293   3                      //传感器上没有手指，延时后继续发送采集命令，计数30次后重置为�
+             -�证指纹
+ 294   3                      noFingureTimesWhenInput++;
+ 295   3                      if(noFingureTimesWhenInput > NO_FINGURE_WHEN_INPUT_MAX_TIME)
+ 296   3                          sendCmdStatus = ACTION_GET_IMAGE_FOR_CHECK;
+ 297   3                      else    
+C51 COMPILER V9.52.0.0   FINGURE                                                           03/10/2017 16:03:05 PAGE 6   
 
- 301   2                  delay(65535);
- 302   2                  delay(65535);
- 303   2                  break;
- 304   2              case ACTION_BUILD_CB1_FOR_CHECK:
- 305   2                  sendCmdAndParams[0] = 0x02;
- 306   2                  sendCmdAndParams[1] = 0x01;
- 307   2                  buildSendCmd(2);
- 308   2                  uartSendBuffer(sendBuffer, sendBufferLength);
- 309   2                  delay(65535);
- 310   2                  delay(65535);
- 311   2                  break;
- 312   2              case ACTION_SEARCH:
- 313   2                  sendCmdAndParams[0] = 0x04;
- 314   2                  sendCmdAndParams[1] = 0x01;
- 315   2                  sendCmdAndParams[2] = 0x00;
- 316   2                  sendCmdAndParams[3] = 0x00;
- 317   2                  sendCmdAndParams[4] = 0x03;
- 318   2                  sendCmdAndParams[5] = 0xE7;
- 319   2                  buildSendCmd(6);
- 320   2                  uartSendBuffer(sendBuffer, sendBufferLength);
- 321   2                  delay(65535);
- 322   2                  delay(65535);
- 323   2                  break;
- 324   2              case ACTION_GET_FINGURE_ADDRESS_LIST0:
- 325   2                  sendCmdAndParams[0] = 0x1F;
- 326   2                  sendCmdAndParams[1] = 0x00;
- 327   2                  buildSendCmd(2);
- 328   2                  uartSendBuffer(sendBuffer, sendBufferLength);
- 329   2                  break;
- 330   2              case ACTION_GET_FINGURE_ADDRESS_LIST1:
- 331   2                  sendCmdAndParams[0] = 0x1F;
- 332   2                  sendCmdAndParams[1] = 0x01;
- 333   2                  buildSendCmd(2);
- 334   2                  uartSendBuffer(sendBuffer, sendBufferLength);
- 335   2                  break;
- 336   2              case ACTION_GET_FINGURE_ADDRESS_LIST2:
- 337   2                  sendCmdAndParams[0] = 0x1F;
- 338   2                  sendCmdAndParams[1] = 0x02;
- 339   2                  buildSendCmd(2);
- 340   2                  uartSendBuffer(sendBuffer, sendBufferLength);
- 341   2                  break;
- 342   2              case ACTION_GET_FINGURE_ADDRESS_LIST3:
- 343   2                  sendCmdAndParams[0] = 0x1F;
- 344   2                  sendCmdAndParams[1] = 0x03;
- 345   2                  buildSendCmd(2);
- 346   2                  uartSendBuffer(sendBuffer, sendBufferLength);
- 347   2                  break;
- 348   2          }
- 349   1      }
- 350          
- 351          /* 等待下位机反馈的延时计数函数 */
- 352          void waitForReceiveFunction(){
- 353   1          waitTimes++;
- 354   1          delay(500);
- 355   1      }
- 356          
- 357          /* 对指纹模块的复位函数 */
- 358          void resetFingureFunction(){
- 359   1          waitTimes = 0;
- 360   1      
- 361   1          //@TODO:控制引脚让指纹下位机复位
- 362   1      
-C51 COMPILER V9.52.0.0   FINGURE                                                           03/10/2017 10:15:35 PAGE 7   
+ 298   3                          sendCmdStatus = ACTION_GET_IMAGE_FOR_INPUT1;
+ 299   3                      delay(3000);
+ 300   3                  }
+ 301   2                  break;
+ 302   2              case EVENT_BUILD_CB1_FOR_INPUT:
+ 303   2                  if(cfmCode == 0){
+ 304   3                      //生成特征码成功
+ 305   3                      sendCmdStatus = ACTION_GET_IMAGE_FOR_INPUT2;
+ 306   3                      delay(3000);
+ 307   3                  }else{
+ 308   3                      //生成特征码失败
+ 309   3                      showWarning();
+ 310   3                      sendCmdStatus = ACTION_GET_IMAGE_FOR_INPUT1;
+ 311   3                      delay(3000);
+ 312   3                  }
+ 313   2                  break;
+ 314   2              case EVENT_GET_IMAGE_FOR_INPUT2:
+ 315   2                  if(cfmCode == 0){
+ 316   3                      //传感器采集到指纹
+ 317   3                      sendCmdStatus = ACTION_BUILD_CB2_FOR_INPUT;
+ 318   3                      noFingureTimesWhenInput = 0;
+ 319   3                  }else if(cfmCode == 2){ 
+ 320   3                      //传感器上没有手指，延时后继续发送采集命令，计数30次后重置为�
+             -�证指纹
+ 321   3                      noFingureTimesWhenInput++;
+ 322   3                      if(noFingureTimesWhenInput > NO_FINGURE_WHEN_INPUT_MAX_TIME)
+ 323   3                          sendCmdStatus = ACTION_GET_IMAGE_FOR_CHECK;
+ 324   3                      else    
+ 325   3                          sendCmdStatus = ACTION_GET_IMAGE_FOR_INPUT2;
+ 326   3                      delay(3000);
+ 327   3                  }
+ 328   2                  break;
+ 329   2              case EVENT_BUILD_CB2_FOR_INPUT:
+ 330   2                  if(cfmCode == 0){
+ 331   3                      //生成特征码成功
+ 332   3                      sendCmdStatus = ACTION_MEARGE_CODE;
+ 333   3                      delay(3000);
+ 334   3                  }else{
+ 335   3                      //生成特征码失败
+ 336   3                      showWarning();
+ 337   3                      sendCmdStatus = ACTION_GET_IMAGE_FOR_INPUT2;
+ 338   3                      delay(3000);
+ 339   3                  }
+ 340   2                  break;
+ 341   2              case EVENT_MEARGE_CODE:
+ 342   2                  if(cfmCode == 0){
+ 343   3                      //特征码合并成功
+ 344   3                      sendCmdStatus = ACTION_SAVE_ADDRESS;
+ 345   3                      delay(3000);
+ 346   3                  }else{
+ 347   3                      //特征码合并失败
+ 348   3                      showWarning();
+ 349   3                      sendCmdStatus = ACTION_GET_IMAGE_FOR_CHECK;
+ 350   3                      delay(3000);
+ 351   3                  }
+ 352   2                  break;
+ 353   2              case EVENT_SAVE_ADDRESS:
+ 354   2                  if(cfmCode == 0){
+ 355   3                      //指纹特征保存成功
+ 356   3                      sendCmdStatus = ACTION_GET_IMAGE_FOR_CHECK;
+ 357   3                      delay(3000);
+ 358   3                      updateFingureAddress(newFingureAddressIndex);
+C51 COMPILER V9.52.0.0   FINGURE                                                           03/10/2017 16:03:05 PAGE 7   
 
- 363   1          delay(65535);
- 364   1          delay(65535);
- 365   1          delay(65535);
- 366   1          delay(65535);
- 367   1      
- 368   1          initMain();
- 369   1      }
- 370          
- 371          /**
- 372           * 获取指纹模块的有效指纹列表
- 373           * @return [0:成功,1:超时失败,2:反馈错误]
- 374           */
- 375          uchar getAddressListFunction(){
- 376   1          sendCmdStatus = ACTION_GET_FINGURE_ADDRESS_LIST0;
- 377   1      
- 378   1          for(ut1 = 0; ut1 < 4; ut1++){
- 379   2              sendCmdFunction();
- 380   2              
- 381   2              if(waitForReceive)
+ 359   3                  }else{
+ 360   3                      //特征码合并失败
+ 361   3                      showWarning();
+ 362   3                      sendCmdStatus = ACTION_GET_IMAGE_FOR_CHECK;
+ 363   3                      delay(3000);
+ 364   3                  }
+ 365   2                  break;
+ 366   2          }
+ 367   1      }
+ 368          
+ 369          /* 根据sendCmdStatus，构造发送命令 */
+ 370          void sendCmdFunction(){
+ 371   1          /* 串口接受的相关状态复位 */
+ 372   1          receiveEventStatus = 0;
+ 373   1          waitForReceive = 1;
+ 374   1          receiveBufferLength = 0;
+ 375   1      
+ 376   1          switch(sendCmdStatus){
+ 377   2              case ACTION_GET_IMAGE_FOR_CHECK:
+ 378   2                  P1 = display_code[10];
+ 379   2                  sendCmdAndParams[0] = 0x01;
+ 380   2                  buildSendCmd(1);
+ 381   2                  uartSendBuffer(sendBuffer, sendBufferLength);
  382   2                  delay(65535);
- 383   2              if(waitForReceive)
- 384   2                  delay(65535);
- 385   2              if(waitForReceive)
- 386   2                  delay(65535);
- 387   2              if(waitForReceive)
- 388   2                  delay(65535);
- 389   2              //等待4 * 65535个机器步骤，如果依然没有反馈则失败
- 390   2      
- 391   2              if(waitForReceive)
- 392   2                  return 1;
- 393   2              if(cfmCode || receivePackageLength != 35)
- 394   2                  return 2;
- 395   2      
- 396   2              //从串口反馈参数中提取列表索引数据
- 397   2              for(uintTemp = 1; uintTemp < 33; uintTemp++){
- 398   3                  fingureAddressIndex[ ut1 * 32 + uintTemp - 1] = receiveParams[uintTemp];
- 399   3              }
- 400   2              sendCmdStatus++;    //将指令移到下一页
- 401   2          }
- 402   1      
- 403   1          P1 = 0x39;
- 404   1          return 0;
- 405   1      }
- 406          
- 407          /* @TODO:交互反馈 */
- 408          void showWarning(){
- 409   1      
- 410   1      }
+ 383   2                  break;
+ 384   2              case ACTION_BUILD_CB1_FOR_CHECK:
+ 385   2                  sendCmdAndParams[0] = 0x02;
+ 386   2                  sendCmdAndParams[1] = 0x01;
+ 387   2                  buildSendCmd(2);
+ 388   2                  uartSendBuffer(sendBuffer, sendBufferLength);
+ 389   2                  delay(65535);
+ 390   2                  break;
+ 391   2              case ACTION_SEARCH:
+ 392   2                  sendCmdAndParams[0] = 0x04;
+ 393   2                  sendCmdAndParams[1] = 0x01;
+ 394   2                  sendCmdAndParams[2] = 0x00;
+ 395   2                  sendCmdAndParams[3] = 0x00;
+ 396   2                  sendCmdAndParams[4] = 0x03;
+ 397   2                  sendCmdAndParams[5] = 0xE7;
+ 398   2                  buildSendCmd(6);
+ 399   2                  uartSendBuffer(sendBuffer, sendBufferLength);
+ 400   2                  delay(65535);
+ 401   2                  break;
+ 402   2              case ACTION_GET_FINGURE_ADDRESS_LIST0:
+ 403   2                  sendCmdAndParams[0] = 0x1F;
+ 404   2                  sendCmdAndParams[1] = 0x00;
+ 405   2                  buildSendCmd(2);
+ 406   2                  uartSendBuffer(sendBuffer, sendBufferLength);
+ 407   2                  break;
+ 408   2              case ACTION_GET_FINGURE_ADDRESS_LIST1:
+ 409   2                  sendCmdAndParams[0] = 0x1F;
+ 410   2                  sendCmdAndParams[1] = 0x01;
+ 411   2                  buildSendCmd(2);
+ 412   2                  uartSendBuffer(sendBuffer, sendBufferLength);
+ 413   2                  break;
+ 414   2              case ACTION_GET_FINGURE_ADDRESS_LIST2:
+ 415   2                  sendCmdAndParams[0] = 0x1F;
+ 416   2                  sendCmdAndParams[1] = 0x02;
+ 417   2                  buildSendCmd(2);
+ 418   2                  uartSendBuffer(sendBuffer, sendBufferLength);
+ 419   2                  break;
+ 420   2              case ACTION_GET_FINGURE_ADDRESS_LIST3:
+C51 COMPILER V9.52.0.0   FINGURE                                                           03/10/2017 16:03:05 PAGE 8   
+
+ 421   2                  sendCmdAndParams[0] = 0x1F;
+ 422   2                  sendCmdAndParams[1] = 0x03;
+ 423   2                  buildSendCmd(2);
+ 424   2                  uartSendBuffer(sendBuffer, sendBufferLength);
+ 425   2                  break;
+ 426   2              case ACTION_GET_IMAGE_FOR_INPUT1:
+ 427   2                  P1 = display_code[11];
+ 428   2                  sendCmdAndParams[0] = 0x01;
+ 429   2                  buildSendCmd(1);
+ 430   2                  uartSendBuffer(sendBuffer, sendBufferLength);
+ 431   2                  delay(65535);
+ 432   2                  break;
+ 433   2              case ACTION_GET_IMAGE_FOR_INPUT2:
+ 434   2                  sendCmdAndParams[0] = 0x01;
+ 435   2                  buildSendCmd(1);
+ 436   2                  uartSendBuffer(sendBuffer, sendBufferLength);
+ 437   2                  delay(65535);
+ 438   2                  break;
+ 439   2              case ACTION_BUILD_CB1_FOR_INPUT:
+ 440   2                  sendCmdAndParams[0] = 0x02;
+ 441   2                  sendCmdAndParams[1] = 0x01;
+ 442   2                  buildSendCmd(2);
+ 443   2                  uartSendBuffer(sendBuffer, sendBufferLength);
+ 444   2                  delay(65535);
+ 445   2                  break;
+ 446   2              case ACTION_BUILD_CB2_FOR_INPUT:
+ 447   2                  sendCmdAndParams[0] = 0x02;
+ 448   2                  sendCmdAndParams[1] = 0x02;
+ 449   2                  buildSendCmd(2);
+ 450   2                  uartSendBuffer(sendBuffer, sendBufferLength);
+ 451   2                  delay(65535);
+ 452   2                  break;
+ 453   2              case ACTION_MEARGE_CODE:
+ 454   2                  sendCmdAndParams[0] = 0x05;
+ 455   2                  buildSendCmd(1);
+ 456   2                  uartSendBuffer(sendBuffer, sendBufferLength);
+ 457   2                  delay(65535);
+ 458   2                  break;
+ 459   2              case ACTION_SAVE_ADDRESS:
+ 460   2                  sendCmdAndParams[0] = 0x06;
+ 461   2                  sendCmdAndParams[1] = 0x01;
+ 462   2                  sendCmdAndParams[2] = (uchar)(newFingureAddressIndex>>8);
+ 463   2                  sendCmdAndParams[3] = (uchar)newFingureAddressIndex;
+ 464   2                  buildSendCmd(4);
+ 465   2                  uartSendBuffer(sendBuffer, sendBufferLength);
+ 466   2                  delay(65535);
+ 467   2                  break;
+ 468   2          }
+ 469   1      }
+ 470          
+ 471          /* 等待下位机反馈的延时计数函数 */
+ 472          void waitForReceiveFunction(){
+ 473   1          waitTimes++;
+ 474   1          delay(500);
+ 475   1      }
+ 476          
+ 477          /* 对指纹模块的复位函数 */
+ 478          void resetFingureFunction(){
+ 479   1          waitTimes = 0;
+ 480   1      
+ 481   1          //@TODO:控制引脚让指纹下位机复位
+ 482   1      
+C51 COMPILER V9.52.0.0   FINGURE                                                           03/10/2017 16:03:05 PAGE 9   
+
+ 483   1          delay(65535);
+ 484   1          delay(65535);
+ 485   1          delay(65535);
+ 486   1          delay(65535);
+ 487   1      
+ 488   1          initMain();
+ 489   1          sendCmdStatus = ACTION_GET_IMAGE_FOR_CHECK;
+ 490   1      }
+ 491          
+ 492          /**
+ 493           * 获取指纹模块的有效指纹列表
+ 494           * @return [0:成功,1:超时失败,2:反馈错误]
+ 495           */
+ 496          uchar getAddressListFunction(){
+ 497   1          sendCmdStatus = ACTION_GET_FINGURE_ADDRESS_LIST0;
+ 498   1      
+ 499   1          for(ut1 = 0; ut1 < 4; ut1++){
+ 500   2              sendCmdFunction();
+ 501   2              
+ 502   2              if(waitForReceive)
+ 503   2                  delay(65535);
+ 504   2              if(waitForReceive)
+ 505   2                  delay(65535);
+ 506   2              if(waitForReceive)
+ 507   2                  delay(65535);
+ 508   2              if(waitForReceive)
+ 509   2                  delay(65535);
+ 510   2              //等待4 * 65535个机器步骤，如果依然没有反馈则失败
+ 511   2      
+ 512   2              if(waitForReceive)
+ 513   2                  return 1;
+ 514   2              if(cfmCode || receivePackageLength != 35)
+ 515   2                  return 2;
+ 516   2      
+ 517   2              //从串口反馈参数中提取列表索引数据
+ 518   2              for(uintTemp = 0; uintTemp < 33; uintTemp++){
+ 519   3                  fingureAddressIndex[ ut1 * 32 + uintTemp] = receiveParams[uintTemp];
+ 520   3              }
+ 521   2              sendCmdStatus++;    //将指令移到下一页
+ 522   2          }
+ 523   1      
+ 524   1          return 0;
+ 525   1      }
+ 526          
+ 527          /**
+ 528           * 根据内存中的指纹库，和传入的权限，构造一个新的未使用的指纹索引
+ 529           * @param  uchar [权限，1-10]
+ 530           * @return       [未使用的指纹库索引]
+ 531           */
+ 532          uint  getNewAddressIndexByPower(uchar power){
+ 533   1          uintTemp = (power - 1) * 100;
+ 534   1          ucharTemp = fingureAddressIndex[uintTemp / 8]<<(uintTemp % 8);
+ 535   1          while((ucharTemp & 0x80) == 0x80){
+ 536   2              uintTemp++;
+ 537   2              ucharTemp = fingureAddressIndex[uintTemp / 8]<<(uintTemp % 8);
+ 538   2          }
+ 539   1          return uintTemp;
+ 540   1      }
+ 541          
+ 542          /**
+ 543           * 更新指纹库，将指定位置的bit置为1
+ 544           * @param  address [指定地址]
+C51 COMPILER V9.52.0.0   FINGURE                                                           03/10/2017 16:03:05 PAGE 10  
+
+ 545           * @return         []
+ 546           */
+ 547          void  updateFingureAddress(uint address){
+ 548   1          ucharTemp = fingureAddressIndex[address/8];
+ 549   1          ut1 = 0x80 >> (address % 8);
+ 550   1          ucharTemp = ucharTemp | ut1;
+ 551   1          fingureAddressIndex[address/8] = ucharTemp;
+ 552   1      }
+ 553          
+ 554          /* @TODO:交互反馈 */
+ 555          void showWarning(){
+ 556   1      
+ 557   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =   1085    ----
+   CODE SIZE        =   1575    ----
    CONSTANT SIZE    =     23    ----
    XDATA SIZE       =    128    ----
    PDATA SIZE       =   ----    ----
-   DATA SIZE        =     49       7
+   DATA SIZE        =     52       7
    IDATA SIZE       =     76    ----
    BIT SIZE         =   ----    ----
 END OF MODULE INFORMATION.
