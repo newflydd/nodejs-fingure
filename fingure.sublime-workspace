@@ -1,0 +1,834 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"messageBu",
+				"messageBufferLength"
+			],
+			[
+				"de",
+				"define"
+			],
+			[
+				"ucharM",
+				"ucharMainBuffer"
+			],
+			[
+				"ucharBu",
+				"ucharBuffer"
+			],
+			[
+				"ucha",
+				"ucharBuffer"
+			],
+			[
+				"me",
+				"messageBufferLength"
+			],
+			[
+				"message",
+				"messageBuffer"
+			],
+			[
+				"mesag",
+				"messageReadble"
+			],
+			[
+				"uartS",
+				"uartSendBuffer"
+			],
+			[
+				"receiveBu",
+				"receiveBufferLength"
+			],
+			[
+				"receive",
+				"receivePackageLength"
+			],
+			[
+				"ACTION_GETfIN",
+				"ACTION_GET_FINGURE_ADDRESS_LIST0"
+			],
+			[
+				"sendB",
+				"sendBufferLength"
+			],
+			[
+				"uint",
+				"uintTemp"
+			],
+			[
+				"uartSen",
+				"uartSendByte"
+			],
+			[
+				"uin",
+				"uintTemp"
+			],
+			[
+				"uchar",
+				"ucharTemp"
+			],
+			[
+				"ACTION_",
+				"ACTION_GET_IMAGE_FOR_CHECK"
+			],
+			[
+				"uchaR",
+				"ucharTemp"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "mcu/fingure.c",
+			"settings":
+			{
+				"buffer_size": 16044,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "mcu-plc/mcu-plc.c",
+			"settings":
+			{
+				"buffer_size": 1740,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "input.js",
+			"settings":
+			{
+				"buffer_size": 14345,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "mcu/uart.c",
+			"settings":
+			{
+				"buffer_size": 618,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "mel-test/ruleTest.cpp",
+			"settings":
+			{
+				"buffer_size": 5047,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "mcu-plc/mcu-plc.h",
+			"settings":
+			{
+				"buffer_size": 898,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"contents": "#ifndef __FINGURE__\n#define __FINGURE__\n\n#include <reg52.h>\n\n/* 2byte 8bit 无符号位整型 0-255 */\n#ifndef uchar\n#define uchar unsigned char\n#endif\n\n/* 4byte 16bit 无符号位整型 0-65535 */\n#ifndef uint\n#define uint unsigned int\n#endif\n\n//@TODO:临时信号量\n#define GPIO_INPUT P0\n\n//录入指纹时如果没有手指放上去，最大重复次数\n#define NO_FINGURE_WHEN_INPUT_MAX_TIME 30\n\n/* 发送包的包头 */\nuchar code sendPackageHeader[] = {0xEF, 0x01, 0xFF, 0xFF, 0xFF, 0xFF, 0x01};\n/* @TODO:数码管显示，测试后需要删除 */\n/*                             0     1     2     3     4     5     6     7     8    9     A     b     C     d     E     F*/\nuchar code display_code[] = {0x3f, 0x06, 0x5b, 0x4f, 0x66, 0x6d, 0x7d, 0x07, 0x7f, 0x6f, 0x77, 0x7c, 0x39, 0x5E, 0x79, 0x71};\n\nuchar bdata bitChar;\t\t\t\t\t//用来保存各类状态的虚拟uchar\nsbit  receiveCmdNotify\t= bitChar^0;\t//串口接受了一个符合校验的完整的指令，需要立即处理\nsbit  waitForReceive \t= bitChar^1;\t//等待接受标志，此位为1时不可以向下位机发送请求，只能等待\nsbit  booleanTemp\t\t= bitChar^2;\t//临时boolean变量\n\nuchar datByte = 0x11;\nuchar sendBufferLength = 16;        //发送指令实际长度，在发送存储命令时最大为16\nuchar sendBuffer[16];               //发送指令寄存器\nuchar sendCmdAndParams[6];\t\t\t//发送指令中的命令和参数\nuchar receiveBufferLength = 44;     //接受指令实际长度，在接受指纹库列表时最大为44\nuchar idata receiveBuffer[44];      //接受指令寄存器\nuchar receiveByte;\t\t\t\t\t//接受的串口单字节\nuint  receivePackageLength;\t\t\t//接受指令包长度\nuint  receiveCheckSum;\t\t\t\t//接受指令校验和\nuchar cfmCode;\t\t\t\t\t\t//接受指令确认码\nuchar idata receiveParams[32];\t\t//接受指令参数，最长32个字节\nuchar cmdAndParams[5];\t\t\t\t//存放指令和参数，最多1个byte的指令+2*2byte的参数\n\nuchar receiveEventStatus = 0;\t\t//当前接受的事件类型，0：没有任何事件， >=1时需要接住不同的事件，详细的事件信号分配见：event.h\nuchar sendCmdStatus = 0;\t\t\t//当前发送的命令类型，0：没有发送任务， >=1时表示需要发送命令给下位机\t\t\nuchar inputSignal = 0;\t\t\t\t//P2输入位的录入通知\nuchar waitTimes = 0;\t\t\t\t//等待次数，大于3次时需要复位\nuchar noFingureTimesWhenInput = 0;\t//录入指纹时，没有手指时的尝试次数\n\nuchar xdata fingureAddressIndex[128];\t//指纹库分页存储列表，按bit查找，1：该位置有指纹存储，0：该位置没有指纹存储\nuchar fingureAddressPageNum;\t\t\t//指纹库分页存储片选标记，0-3\nuint  newFingureAddressIndex;\t\t\t//根据权限计算出来的空白的存储地址\n\nuchar ucharTemp,ut1;\t\t\t\t//重复利用的uchar类型临时变量\nuint  uintTemp;\t\t\t\t\t\t//重复利用的uint类型临时变量\n\nuchar ucit;         //中断中自己使用的uchar变量，中断中禁止使用任何全局临时变量\nuint  uiit;         //中断中自己使用的uint 变量，中断中禁止使用任何全局临时变量\n\n\n/* 初始化函数 */\nvoid initMain();\n/* 延时函数 */\nvoid delay();\n/* 给sendBuffer变量构建发送指令，命令和参数来自于全局变量sendCmdAndParams */\nvoid buildSendCmd(uchar capLength);\n/* 计算校验和 */\nuint getCheckSum(uchar packageLength, uchar* cmdAndParams, uchar capLength);\n/* 检查P2是否有录入指纹的信号 */\nuchar checkInputSignal();\n\n/* 等待下位机反馈的延时计数函数 */\nvoid waitForReceiveFunction();\n/* 对指纹模块的复位函数 */\nvoid resetFingureFunction();\n\n/* 根据receiveEventStatus，解析串口响应 */\nvoid receiveEventFunction();\n/* 根据sendCmdStatus，构造发送命令 */\nvoid sendCmdFunction();\n\n/* 获取指纹模块的有效指纹列表 */\nuchar getAddressListFunction();\n/* 根据内存中的指纹库，和传入的权限，构造一个新的未使用的指纹索引 */\nuint  getNewAddressIndexByPower(uchar); \n/* 更新指纹库，将指定位置的bit置为1 */\nvoid  updateFingureAddress(uint);\n\n/* 交互反馈 */\nvoid showWarning();\n\n#endif\n\n",
+			"file": "mcu/fingure.h",
+			"file_size": 4213,
+			"file_write_time": 131336058082254783,
+			"settings":
+			{
+				"buffer_size": 2833,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "mcu/event.h",
+			"settings":
+			{
+				"buffer_size": 1791,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "mcu/uart.h",
+			"settings":
+			{
+				"buffer_size": 406,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "mel-test/ruleTest.h",
+			"settings":
+			{
+				"buffer_size": 527,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		}
+	],
+	"build_system": "Packages/User/cpp2exe.sublime-build",
+	"build_system_choices":
+	[
+		[
+			[
+				[
+					"Packages/C++/C++ Single File.sublime-build",
+					""
+				],
+				[
+					"Packages/C++/C++ Single File.sublime-build",
+					"Run"
+				]
+			],
+			[
+				"Packages/C++/C++ Single File.sublime-build",
+				"Run"
+			]
+		],
+		[
+			[
+				[
+					"Packages/C++/C++ Single File.sublime-build",
+					""
+				],
+				[
+					"Packages/C++/C++ Single File.sublime-build",
+					"Run"
+				],
+				[
+					"Packages/User/go.sublime-build",
+					""
+				],
+				[
+					"Packages/User/go.sublime-build",
+					"Run"
+				]
+			],
+			[
+				"Packages/C++/C++ Single File.sublime-build",
+				""
+			]
+		],
+		[
+			[
+				[
+					"Packages/User/cpp2exe.sublime-build",
+					""
+				],
+				[
+					"Packages/User/cpp2exe.sublime-build",
+					"Run"
+				]
+			],
+			[
+				"Packages/User/cpp2exe.sublime-build",
+				"Run"
+			]
+		]
+	],
+	"build_varint": "Run",
+	"command_palette":
+	{
+		"height": 279.0,
+		"last_filter": "open file",
+		"selected_items":
+		[
+			[
+				"open file",
+				"View: Toggle Open Files in Side Bar"
+			],
+			[
+				"openfi",
+				"TodoReview: Open Files"
+			],
+			[
+				"c",
+				"Set Syntax: C"
+			],
+			[
+				"mini",
+				"View: Toggle Minimap"
+			],
+			[
+				"stat",
+				"View: Toggle Status Bar"
+			],
+			[
+				"me",
+				"View: Toggle Menu"
+			],
+			[
+				"cq",
+				"CoolFormat: Quick Format"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"remove",
+				"Package Control: Remove Package"
+			],
+			[
+				"istall",
+				"Package Control: Install Package"
+			],
+			[
+				"menu",
+				"View: Toggle Menu"
+			],
+			[
+				"tod",
+				"TodoReview: Open Files"
+			],
+			[
+				"LIST",
+				"Package Control: List Packages"
+			]
+		],
+		"width": 612.0
+	},
+	"console":
+	{
+		"height": 186.0,
+		"history":
+		[
+			"git commit -m",
+			"import urllib.request,os,hashlib; h = 'df21e130d211cfc94d9b0905775a7c0f' + '1e3d39e33b79698005270310898eea76'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"expanded_folders":
+	[
+		"/D/workspace-npm/fingure",
+		"/D/workspace-npm/fingure/mcu-plc",
+		"/D/workspace-npm/fingure/mel-test"
+	],
+	"file_history":
+	[
+		"/C/Users/Administrator/AppData/Roaming/Sublime Text 3/Packages/User/cpp2exe.sublime-build",
+		"/D/workspace-npm/fingure/mcu/blog.md",
+		"/D/workspace-npm/fingure/README.MD",
+		"/D/workspace/C/上海宇松/double_encrypt_10AM.c",
+		"/C/Users/Administrator/Desktop/51_DHT21.c",
+		"/C/Users/Administrator/AppData/Roaming/Sublime Text 3/Packages/Clang Format/Default (Windows).sublime-keymap",
+		"/C/Users/Administrator/AppData/Roaming/Sublime Text 3/Packages/User/Terminal.sublime-settings",
+		"/C/Users/Administrator/AppData/Roaming/Sublime Text 3/Packages/Terminal/Terminal.sublime-settings",
+		"/C/Users/Administrator/AppData/Roaming/Sublime Text 3/Packages/User/Terminal (Windows).sublime-settings",
+		"/C/Users/Administrator/AppData/Roaming/Sublime Text 3/Packages/Terminal/Default (Windows).sublime-keymap",
+		"/D/workspace-npm/fingure/mcu/fingure",
+		"/D/workspace2/git/sytec/company/ChangZhouYouRui/mcu/singleDecryptLockAt10AM.c",
+		"/D/workspace2/git/sytec/company/ChangZhouYouRui/mcu/SYDEC.C"
+	],
+	"find":
+	{
+		"height": 67.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"P1",
+			"checkInputSignal",
+			"中断",
+			"P1",
+			"onReceivedAddressListEvent",
+			"uartSendByte",
+			"display",
+			"sendCmdStatus",
+			"checkInputSignal",
+			"sendCmd",
+			"sendCmd ",
+			"uchar code",
+			"waitTimes",
+			"waitForReceiveFunction",
+			"datByte",
+			"sendCmdFunction",
+			"中断",
+			"checkInputSignal",
+			"sendCmd",
+			"PARAM1",
+			"fiveMinuteFunction",
+			"核心"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"#define"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 1,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "mcu/fingure.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 16044,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								364,
+								364
+							]
+						],
+						"settings":
+						{
+							"is_init_dirty_state": false,
+							"origin_encoding": "UTF-8",
+							"syntax": "Packages/C++/C.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "mcu-plc/mcu-plc.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1740,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								800,
+								800
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 1107.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "input.js",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 14345,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								789,
+								789
+							]
+						],
+						"settings":
+						{
+							"is_init_dirty_state": false,
+							"origin_encoding": "UTF-8",
+							"syntax": "Packages/JavaScript/JavaScript.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": -0.0,
+						"translation.y": 369.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "mcu/uart.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 618,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								276,
+								276
+							]
+						],
+						"settings":
+						{
+							"is_init_dirty_state": false,
+							"origin_encoding": "UTF-8",
+							"syntax": "Packages/C++/C.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "mel-test/ruleTest.cpp",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 5047,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3725,
+								3590
+							]
+						],
+						"settings":
+						{
+							"is_init_dirty_state": false,
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 8006.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				}
+			]
+		},
+		{
+			"selected": 0,
+			"sheets":
+			[
+				{
+					"buffer": 5,
+					"file": "mcu-plc/mcu-plc.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 898,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								428,
+								428
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 1594.0,
+						"translation.y": 492.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "mcu/fingure.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2833,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								771,
+								692
+							]
+						],
+						"settings":
+						{
+							"is_init_dirty_state": false,
+							"origin_encoding": "UTF-8",
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 123.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 7,
+					"file": "mcu/event.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 1791,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1148,
+								1122
+							]
+						],
+						"settings":
+						{
+							"is_init_dirty_state": false,
+							"origin_encoding": "UTF-8",
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 943.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 8,
+					"file": "mcu/uart.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 406,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								213,
+								213
+							]
+						],
+						"settings":
+						{
+							"is_init_dirty_state": false,
+							"origin_encoding": "UTF-8",
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 10,
+					"type": "text"
+				},
+				{
+					"buffer": 0,
+					"file": "mcu/fingure.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 16044,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1530,
+								1530
+							]
+						],
+						"settings":
+						{
+							"is_init_dirty_state": false,
+							"origin_encoding": "UTF-8",
+							"syntax": "Packages/C++/C.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 2829.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
+					"file": "mel-test/ruleTest.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 527,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								258,
+								258
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 7,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 49.0
+	},
+	"input":
+	{
+		"height": 67.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			],
+			[
+				1,
+				0,
+				2,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			0.553803200663,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": false,
+	"output.exec":
+	{
+		"height": 250.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "Packages/User/cpp2exe.sublime-build",
+	"project": "fingure.sublime-project",
+	"replace":
+	{
+		"height": 130.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": false,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 259.0,
+	"status_bar_visible": false,
+	"template_settings":
+	{
+	}
+}

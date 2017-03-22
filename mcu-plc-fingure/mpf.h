@@ -1,7 +1,7 @@
-#ifndef __FINGURE__
-#define __FINGURE__
-
 #include <reg52.h>
+#include "fingure.h"
+#include "uart.h"
+#include "event.h"
 
 /* 2byte 8bit 无符号位整型 0-255 */
 #ifndef uchar
@@ -13,22 +13,20 @@
 #define uint unsigned int
 #endif
 
-//@TODO:临时信号量
-#define GPIO_INPUT P0
-
-//录入指纹时如果没有手指放上去，最大重复次数
-#define NO_FINGURE_WHEN_INPUT_MAX_TIME 30
-
-/* 发送包的包头 */
-uchar code sendPackageHeader[] = {0xEF, 0x01, 0xFF, 0xFF, 0xFF, 0xFF, 0x01};
-/* @TODO:数码管显示，测试后需要删除 */
-/*                             0     1     2     3     4     5     6     7     8    9     A     b     C     d     E     F*/
-uchar code display_code[] = {0x3f, 0x06, 0x5b, 0x4f, 0x66, 0x6d, 0x7d, 0x07, 0x7f, 0x6f, 0x77, 0x7c, 0x39, 0x5E, 0x79, 0x71};
+//高4位输入，低4位输出
+#define GPIO_PLCIO P2
 
 uchar bdata bitChar;					//用来保存各类状态的虚拟uchar
 sbit  receiveCmdNotify	= bitChar^0;	//串口接受了一个符合校验的完整的指令，需要立即处理
 sbit  waitForReceive 	= bitChar^1;	//等待接受标志，此位为1时不可以向下位机发送请求，只能等待
 sbit  booleanTemp		= bitChar^2;	//临时boolean变量
+sbit  messageReadble	= bitChar^3;	//与PLC通讯的数据接收开关
+
+/* 发送包的包头 */
+uchar code sendPackageHeader[] = {0xEF, 0x01, 0xFF, 0xFF, 0xFF, 0xFF, 0x01};
+/* @TODO:数码管显示，测试后需要删除 */
+/*                             0     1     2     3     4     5     6     7     8    9     A     b     C     d     E     F    空白*/
+uchar code display_code[] = {0x3f, 0x06, 0x5b, 0x4f, 0x66, 0x6d, 0x7d, 0x07, 0x7f, 0x6f, 0x77, 0x7c, 0x39, 0x5E, 0x79, 0x71, 0x00};
 
 uchar datByte = 0x11;
 uchar sendBufferLength = 16;        //发送指令实际长度，在发送存储命令时最大为16
@@ -56,40 +54,42 @@ uint  newFingureAddressIndex;			//根据权限计算出来的空白的存储地�
 uchar ucharTemp,ut1;				//重复利用的uchar类型临时变量
 uint  uintTemp;						//重复利用的uint类型临时变量
 
-uchar ucit;         //中断中自己使用的uchar变量，中断中禁止使用任何全局临时变量
-uint  uiit;         //中断中自己使用的uint 变量，中断中禁止使用任何全局临时变量
+uchar ucit;         				//中断中自己使用的uchar变量，中断中禁止使用任何全局临时变量
+uint  uiit;         				//中断中自己使用的uint 变量，中断中禁止使用任何全局临时变量
 
+uchar messageBufferLength;			//从PLC接受过来的数据长度
+uchar messageBuffer[4];				//从PLC接受的数据寄存器
+uchar bcdBuffer[4];					//发往plc的bcd码寄存器
 
 /* 初始化函数 */
 void initMain();
 /* 延时函数 */
-void delay();
-/* 给sendBuffer变量构建发送指令，命令和参数来自于全局变量sendCmdAndParams */
-void buildSendCmd(uchar capLength);
-/* 计算校验和 */
-uint getCheckSum(uchar packageLength, uchar* cmdAndParams, uchar capLength);
+void delay(uint);
 /* 检查P2是否有录入指纹的信号 */
 uchar checkInputSignal();
-
-/* 等待下位机反馈的延时计数函数 */
-void waitForReceiveFunction();
-/* 对指纹模块的复位函数 */
-void resetFingureFunction();
-
-/* 根据receiveEventStatus，解析串口响应 */
-void receiveEventFunction();
-/* 根据sendCmdStatus，构造发送命令 */
-void sendCmdFunction();
-
-/* 获取指纹模块的有效指纹列表 */
-uchar getAddressListFunction();
-/* 根据内存中的指纹库，和传入的权限，构造一个新的未使用的指纹索引 */
-uint  getNewAddressIndexByPower(uchar); 
-/* 更新指纹库，将指定位置的bit置为1 */
-void  updateFingureAddress(uint);
-
 /* 交互反馈 */
 void showWarning();
+/* 根据receiveEventStatus，解析串口响应 */
+void receiveEventFunction();
 
-#endif
+//读取PLCIO的高4位，映射到返回值的低4位
+uchar readPLCIOH4();
+//向PLCIO低4位写入一个uchar
+void  writePLCIOL4(uchar);
+//对输入进行响应
+uchar processPLCInput(uchar);
+//向PLC发送消息
+uchar sendPLCMessage();
+
+extern void buildSendCmd(uchar capLength);
+extern uint getCheckSum(uchar packageLength, uchar* cmdAndParams, uchar capLength);
+
+extern void waitForReceiveFunction();
+extern void resetFingureFunction();
+
+extern void sendCmdFunction();
+
+extern uchar getAddressListFunction();
+extern uint  getNewAddressIndexByPower(uchar); 
+extern void  updateFingureAddress(uint);
 

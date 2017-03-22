@@ -9,3 +9,5 @@
 *.Administrator
 *.uvopt
 *.uvproj
+*.sublime-project
+*.sublime-workspace
