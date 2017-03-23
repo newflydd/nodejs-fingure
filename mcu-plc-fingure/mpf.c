@@ -20,6 +20,8 @@ void initMain(){
     waitForReceive = 0;
 
     EA = 1;     //总中断开关打开
+
+    writePLCIOL4(0x0B);		//初始化输出口为B
 }
 
 void main(){
@@ -84,12 +86,17 @@ void main(){
 
         if((sendCmdStatus ==  ACTION_GET_IMAGE_FOR_CHECK) && inputSignal){
             switch(inputSignal){
-	        	case 0x01:
+	        	case 0x01:	//录入指纹
 		        	newFingureAddressIndex = getNewAddressIndexByPower(messageBuffer[3]);    //通过权限来构造一个空位置
 		            noFingureTimesWhenInput = 0;                                        //将录入指纹时的重复次数归零
 		            sendCmdStatus = ACTION_GET_IMAGE_FOR_INPUT1;
 	        		break;
-	        	case 0x09:
+	        	case 0x09:	//单个位置清空指纹
+	        		sendCmdStatus = ACTION_DELETE_ONE;
+	        		break;
+	        	case 0x06:	//6999：清空所有指纹库
+	        		if(messageBuffer[1] == 0x09 && messageBuffer[2] == 0x09 && messageBuffer[3] == 0x09)
+	        			sendCmdStatus = ACTION_CLEAN_ALL;
 	        		break;
 	        }
         }
@@ -176,6 +183,128 @@ void serialInterruptCallback() interrupt 4 {
 	}
 }
 
+/* 根据sendCmdStatus，构造发送命令 */
+void sendCmdFunction(){
+    /* 串口接受的相关状态复位 */
+    receiveEventStatus = 0;
+    waitForReceive = 1;
+    receiveBufferLength = 0;
+
+    switch(sendCmdStatus){
+        case ACTION_GET_IMAGE_FOR_CHECK:
+        	showCheck();
+            P1 = display_code[10];
+            sendCmdAndParams[0] = 0x01;
+            buildSendCmd(1);
+            uartSendBuffer(sendBuffer, sendBufferLength);
+            delay(65535);
+            break;
+        case ACTION_BUILD_CB1_FOR_CHECK:
+            sendCmdAndParams[0] = 0x02;
+            sendCmdAndParams[1] = 0x01;
+            buildSendCmd(2);
+            uartSendBuffer(sendBuffer, sendBufferLength);
+            delay(65535);
+            break;
+        case ACTION_SEARCH:
+            sendCmdAndParams[0] = 0x04;
+            sendCmdAndParams[1] = 0x01;
+            sendCmdAndParams[2] = 0x00;
+            sendCmdAndParams[3] = 0x00;
+            sendCmdAndParams[4] = 0x03;
+            sendCmdAndParams[5] = 0xE7;
+            buildSendCmd(6);
+            uartSendBuffer(sendBuffer, sendBufferLength);
+            delay(65535);
+            break;
+        case ACTION_GET_FINGURE_ADDRESS_LIST0:
+            sendCmdAndParams[0] = 0x1F;
+            sendCmdAndParams[1] = 0x00;
+            buildSendCmd(2);
+            uartSendBuffer(sendBuffer, sendBufferLength);
+            break;
+        case ACTION_GET_FINGURE_ADDRESS_LIST1:
+            sendCmdAndParams[0] = 0x1F;
+            sendCmdAndParams[1] = 0x01;
+            buildSendCmd(2);
+            uartSendBuffer(sendBuffer, sendBufferLength);
+            break;
+        case ACTION_GET_FINGURE_ADDRESS_LIST2:
+            sendCmdAndParams[0] = 0x1F;
+            sendCmdAndParams[1] = 0x02;
+            buildSendCmd(2);
+            uartSendBuffer(sendBuffer, sendBufferLength);
+            break;
+        case ACTION_GET_FINGURE_ADDRESS_LIST3:
+            sendCmdAndParams[0] = 0x1F;
+            sendCmdAndParams[1] = 0x03;
+            buildSendCmd(2);
+            uartSendBuffer(sendBuffer, sendBufferLength);
+            break;
+        case ACTION_GET_IMAGE_FOR_INPUT1:
+        	showInput1();
+            P1 = display_code[11];
+            sendCmdAndParams[0] = 0x01;
+            buildSendCmd(1);
+            uartSendBuffer(sendBuffer, sendBufferLength);
+            delay(65535);
+            break;
+        case ACTION_GET_IMAGE_FOR_INPUT2:
+        	showInput2();
+            sendCmdAndParams[0] = 0x01;
+            buildSendCmd(1);
+            uartSendBuffer(sendBuffer, sendBufferLength);
+            delay(65535);
+            break;
+        case ACTION_BUILD_CB1_FOR_INPUT:
+            sendCmdAndParams[0] = 0x02;
+            sendCmdAndParams[1] = 0x01;
+            buildSendCmd(2);
+            uartSendBuffer(sendBuffer, sendBufferLength);
+            delay(65535);
+            break;
+        case ACTION_BUILD_CB2_FOR_INPUT:
+            sendCmdAndParams[0] = 0x02;
+            sendCmdAndParams[1] = 0x02;
+            buildSendCmd(2);
+            uartSendBuffer(sendBuffer, sendBufferLength);
+            delay(65535);
+            break;
+        case ACTION_MEARGE_CODE:
+            sendCmdAndParams[0] = 0x05;
+            buildSendCmd(1);
+            uartSendBuffer(sendBuffer, sendBufferLength);
+            delay(65535);
+            break;
+        case ACTION_SAVE_ADDRESS:
+            sendCmdAndParams[0] = 0x06;
+            sendCmdAndParams[1] = 0x01;
+            sendCmdAndParams[2] = (uchar)(newFingureAddressIndex>>8);
+            sendCmdAndParams[3] = (uchar)newFingureAddressIndex;
+            buildSendCmd(4);
+            uartSendBuffer(sendBuffer, sendBufferLength);
+            delay(65535);
+            break;
+        case ACTION_CLEAN_ALL:		//清空指纹库
+        	sendCmdAndParams[0] = 0x0D;
+        	buildSendCmd(1);
+        	uartSendBuffer(sendBuffer, sendBufferLength);
+        	delay(65535);
+        	break;
+        case ACTION_DELETE_ONE:		//删除特定位置指纹
+        	sendCmdAndParams[0] = 0x0C;
+        	uintTemp = messageBuffer[1] * 100 + messageBuffer[2] * 10 + messageBuffer[3];
+        	sendCmdAndParams[1] = (uchar)(uintTemp>>8);
+        	sendCmdAndParams[2] = (uchar)uintTemp;
+        	sendCmdAndParams[3] = 0x00;
+        	sendCmdAndParams[4] = 0x01;
+        	buildSendCmd(5);
+        	uartSendBuffer(sendBuffer, sendBufferLength);
+        	delay(65535);
+        	break;
+    }
+}
+
 /* 根据receiveEventStatus，解析串口响应 */
 void receiveEventFunction(){
     switch(receiveEventStatus){
@@ -219,16 +348,16 @@ void receiveEventFunction(){
                 uintTemp = uintTemp / 100;
                 P1 = display_code[uintTemp + 1];
                 sendCmdStatus = ACTION_GET_IMAGE_FOR_CHECK;
-                delay(65535);
-                delay(65535);
-                delay(65535);
-                delay(65535);
+                showSuccess();
             }else{
                 //搜索失败
                 showWarning();
                 P1 = 0x3F;
                 sendCmdStatus = ACTION_GET_IMAGE_FOR_CHECK;
-                delay(3000);    
+                delay(65535);
+                delay(65535);
+                delay(65535);
+                delay(65535);
             }
             break;
         case EVENT_GET_IMAGE_FOR_INPUT1:
@@ -255,7 +384,10 @@ void receiveEventFunction(){
                 //生成特征码失败
                 showWarning();
                 sendCmdStatus = ACTION_GET_IMAGE_FOR_INPUT1;
-                delay(3000);
+                delay(65535);
+                delay(65535);
+                delay(65535);
+                delay(65535);
             }
             break;
         case EVENT_GET_IMAGE_FOR_INPUT2:
@@ -282,7 +414,10 @@ void receiveEventFunction(){
                 //生成特征码失败
                 showWarning();
                 sendCmdStatus = ACTION_GET_IMAGE_FOR_INPUT2;
-                delay(3000);
+                delay(65535);
+                delay(65535);
+                delay(65535);
+                delay(65535);
             }
             break;
         case EVENT_MEARGE_CODE:
@@ -294,28 +429,61 @@ void receiveEventFunction(){
                 //特征码合并失败
                 showWarning();
                 sendCmdStatus = ACTION_GET_IMAGE_FOR_CHECK;
-                delay(3000);
+                delay(65535);
+                delay(65535);
+                delay(65535);
+                delay(65535);
             }
             break;
         case EVENT_SAVE_ADDRESS:
             if(cfmCode == 0){
                 //指纹特征保存成功
                 sendCmdStatus = ACTION_GET_IMAGE_FOR_CHECK;
-                delay(3000);
                 updateFingureAddress(newFingureAddressIndex);
+                showSuccess();
             }else{
                 //特征码合并失败
                 showWarning();
                 sendCmdStatus = ACTION_GET_IMAGE_FOR_CHECK;
-                delay(3000);
+                delay(65535);
+                delay(65535);
+                delay(65535);
+                delay(65535);
             }
             break;
+        case EVENT_CLEAN_ALL:
+        	if(cfmCode == 0){
+        		sendCmdStatus = ACTION_GET_IMAGE_FOR_CHECK;
+        		cleanFingureAddress();
+        		showSuccess();
+        	}else{
+        		//清空指纹库失败
+        		showWarning();
+        		sendCmdStatus = ACTION_GET_IMAGE_FOR_CHECK;
+        		delay(65535);
+                delay(65535);
+                delay(65535);
+                delay(65535);
+        	}
+        	break;
+        case EVENT_DELETE_ONE:
+        	if(cfmCode == 0){
+        		uintTemp = messageBuffer[1] * 100 + messageBuffer[2] * 10 + messageBuffer[3];
+        		deleteFingureAddress(uintTemp);
+        		sendCmdStatus = ACTION_GET_IMAGE_FOR_CHECK;
+        		showSuccess();
+        	}else{
+        		//清空指纹库失败
+        		showWarning();
+        		sendCmdStatus = ACTION_GET_IMAGE_FOR_CHECK;
+        		delay(65535);
+                delay(65535);
+                delay(65535);
+                delay(65535);
+        	}
+        	break;
+        	break;
     }
-}
-
-/* 交互反馈 */
-void showWarning(){
-
 }
 
 /* 检查P2是否有请求录入指纹的信号 */
@@ -325,8 +493,6 @@ uchar checkInputSignal(){
 
    	return processPLCInput(ucharTemp);
 }
-
-
 
 uchar readPLCIOH4(){
 	return GPIO_PLCIO>>4;

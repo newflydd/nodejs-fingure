@@ -1,11 +1,6 @@
 #ifndef __EVENT__
 #define __EVENT__
 
-/* 2byte 8bit 无符号位整型 0-255 */
-#ifndef uchar
-#define uchar unsigned char
-#endif
-
 /*
  **************************************************
  *                  接受事件                       *
@@ -36,6 +31,10 @@
 #define EVENT_GET_FINGURE_ADDRESS_LIST1 11
 #define EVENT_GET_FINGURE_ADDRESS_LIST2 12
 #define EVENT_GET_FINGURE_ADDRESS_LIST3 13
+
+/* delete */
+#define EVENT_CLEAN_ALL		14
+#define EVENT_DELETE_ONE	15
 
 
 /*
@@ -68,5 +67,9 @@
 #define ACTION_GET_FINGURE_ADDRESS_LIST1 111
 #define ACTION_GET_FINGURE_ADDRESS_LIST2 112
 #define ACTION_GET_FINGURE_ADDRESS_LIST3 113
+
+/* delete */
+#define ACTION_CLEAN_ALL	114
+#define ACTION_DELETE_ONE	115
 
 #endif

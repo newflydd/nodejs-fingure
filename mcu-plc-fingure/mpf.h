@@ -2,6 +2,7 @@
 #include "fingure.h"
 #include "uart.h"
 #include "event.h"
+#include "led.h"
 
 /* 2byte 8bit 无符号位整型 0-255 */
 #ifndef uchar
@@ -67,8 +68,15 @@ void initMain();
 void delay(uint);
 /* 检查P2是否有录入指纹的信号 */
 uchar checkInputSignal();
-/* 交互反馈 */
-void showWarning();
+
+/* 交互反馈警告 */
+extern void showWarning();
+/* 交互反馈成功 */
+extern void showSuccess();
+extern void showCheck();
+extern void showInput1();
+extern void showInput2();
+
 /* 根据receiveEventStatus，解析串口响应 */
 void receiveEventFunction();
 
@@ -87,9 +95,11 @@ extern uint getCheckSum(uchar packageLength, uchar* cmdAndParams, uchar capLengt
 extern void waitForReceiveFunction();
 extern void resetFingureFunction();
 
-extern void sendCmdFunction();
+/* 根据sendCmdStatus，构造发送命令 */
+void sendCmdFunction();
 
 extern uchar getAddressListFunction();
 extern uint  getNewAddressIndexByPower(uchar); 
 extern void  updateFingureAddress(uint);
+extern void  cleanFingureAddress();
 

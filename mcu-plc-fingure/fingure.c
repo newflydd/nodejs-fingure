@@ -53,108 +53,6 @@ uint getCheckSum(uchar packageLength, uchar* cmdAndParams, uchar capLength){
     return uintTemp + 1;
 }
 
-/* 根据sendCmdStatus，构造发送命令 */
-void sendCmdFunction(){
-    /* 串口接受的相关状态复位 */
-    receiveEventStatus = 0;
-    waitForReceive = 1;
-    receiveBufferLength = 0;
-
-    switch(sendCmdStatus){
-        case ACTION_GET_IMAGE_FOR_CHECK:
-            P1 = display_code[10];
-            sendCmdAndParams[0] = 0x01;
-            buildSendCmd(1);
-            uartSendBuffer(sendBuffer, sendBufferLength);
-            delay(65535);
-            break;
-        case ACTION_BUILD_CB1_FOR_CHECK:
-            sendCmdAndParams[0] = 0x02;
-            sendCmdAndParams[1] = 0x01;
-            buildSendCmd(2);
-            uartSendBuffer(sendBuffer, sendBufferLength);
-            delay(65535);
-            break;
-        case ACTION_SEARCH:
-            sendCmdAndParams[0] = 0x04;
-            sendCmdAndParams[1] = 0x01;
-            sendCmdAndParams[2] = 0x00;
-            sendCmdAndParams[3] = 0x00;
-            sendCmdAndParams[4] = 0x03;
-            sendCmdAndParams[5] = 0xE7;
-            buildSendCmd(6);
-            uartSendBuffer(sendBuffer, sendBufferLength);
-            delay(65535);
-            break;
-        case ACTION_GET_FINGURE_ADDRESS_LIST0:
-            sendCmdAndParams[0] = 0x1F;
-            sendCmdAndParams[1] = 0x00;
-            buildSendCmd(2);
-            uartSendBuffer(sendBuffer, sendBufferLength);
-            break;
-        case ACTION_GET_FINGURE_ADDRESS_LIST1:
-            sendCmdAndParams[0] = 0x1F;
-            sendCmdAndParams[1] = 0x01;
-            buildSendCmd(2);
-            uartSendBuffer(sendBuffer, sendBufferLength);
-            break;
-        case ACTION_GET_FINGURE_ADDRESS_LIST2:
-            sendCmdAndParams[0] = 0x1F;
-            sendCmdAndParams[1] = 0x02;
-            buildSendCmd(2);
-            uartSendBuffer(sendBuffer, sendBufferLength);
-            break;
-        case ACTION_GET_FINGURE_ADDRESS_LIST3:
-            sendCmdAndParams[0] = 0x1F;
-            sendCmdAndParams[1] = 0x03;
-            buildSendCmd(2);
-            uartSendBuffer(sendBuffer, sendBufferLength);
-            break;
-        case ACTION_GET_IMAGE_FOR_INPUT1:
-            P1 = display_code[11];
-            sendCmdAndParams[0] = 0x01;
-            buildSendCmd(1);
-            uartSendBuffer(sendBuffer, sendBufferLength);
-            delay(65535);
-            break;
-        case ACTION_GET_IMAGE_FOR_INPUT2:
-            sendCmdAndParams[0] = 0x01;
-            buildSendCmd(1);
-            uartSendBuffer(sendBuffer, sendBufferLength);
-            delay(65535);
-            break;
-        case ACTION_BUILD_CB1_FOR_INPUT:
-            sendCmdAndParams[0] = 0x02;
-            sendCmdAndParams[1] = 0x01;
-            buildSendCmd(2);
-            uartSendBuffer(sendBuffer, sendBufferLength);
-            delay(65535);
-            break;
-        case ACTION_BUILD_CB2_FOR_INPUT:
-            sendCmdAndParams[0] = 0x02;
-            sendCmdAndParams[1] = 0x02;
-            buildSendCmd(2);
-            uartSendBuffer(sendBuffer, sendBufferLength);
-            delay(65535);
-            break;
-        case ACTION_MEARGE_CODE:
-            sendCmdAndParams[0] = 0x05;
-            buildSendCmd(1);
-            uartSendBuffer(sendBuffer, sendBufferLength);
-            delay(65535);
-            break;
-        case ACTION_SAVE_ADDRESS:
-            sendCmdAndParams[0] = 0x06;
-            sendCmdAndParams[1] = 0x01;
-            sendCmdAndParams[2] = (uchar)(newFingureAddressIndex>>8);
-            sendCmdAndParams[3] = (uchar)newFingureAddressIndex;
-            buildSendCmd(4);
-            uartSendBuffer(sendBuffer, sendBufferLength);
-            delay(65535);
-            break;
-    }
-}
-
 /* 等待下位机反馈的延时计数函数 */
 void waitForReceiveFunction(){
     waitTimes++;
@@ -236,4 +134,25 @@ void  updateFingureAddress(uint address){
     ut1 = 0x80 >> (address % 8);
     ucharTemp = ucharTemp | ut1;
     fingureAddressIndex[address/8] = ucharTemp;
+}
+
+/**
+ * 删除特定位置的指纹，将此位置bit置0
+ * @param  address [指定地址]
+ * @return         []
+ */
+void  deleteFingureAddress(uint address){
+    ucharTemp = fingureAddressIndex[address/8];
+    ut1 = 0xFF7F >> (address % 8);
+    ucharTemp = ucharTemp & ut1;
+    fingureAddressIndex[address/8] = ucharTemp;
+}
+
+/**
+ * 清空内存中的指纹库
+ */
+void cleanFingureAddress(){
+    for(ucharTemp = 0; ucharTemp < 128; ucharTemp++){
+        fingureAddressIndex[ucharTemp] = 0x00;
+    }
 }

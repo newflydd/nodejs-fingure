@@ -70,8 +70,7 @@ void waitForReceiveFunction();
 /* 对指纹模块的复位函数 */
 void resetFingureFunction();
 
-/* 根据sendCmdStatus，构造发送命令 */
-void sendCmdFunction();
+extern void sendCmdFunction();
 
 /* 获取指纹模块的有效指纹列表 */
 uchar getAddressListFunction();
@@ -79,6 +78,10 @@ uchar getAddressListFunction();
 uint  getNewAddressIndexByPower(uchar); 
 /* 更新指纹库，将指定位置的bit置为1 */
 void  updateFingureAddress(uint);
+/* 清空内存中的指纹库 */
+void  cleanFingureAddress();
+/* 删除特定位置的指纹，将此位置bit置0 */
+void  deleteFingureAddress(uint);
 
 #endif
 
