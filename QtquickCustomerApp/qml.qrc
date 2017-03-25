@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file>qtquickcontrols2.conf</file>
+        <file>images/finger.png</file>
+        <file>PowerButton.qml</file>
+        <file>images/finger2.png</file>
+        <file>images/finger3.png</file>
+        <file>FingerListModel.qml</file>
+    </qresource>
+</RCC>

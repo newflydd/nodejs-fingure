@@ -4,6 +4,26 @@
 		"selected_items":
 		[
 			[
+				"me",
+				"messageBuffer"
+			],
+			[
+				"fin",
+				"fingureAddressIndex"
+			],
+			[
+				"sendB",
+				"sendBufferLength"
+			],
+			[
+				"sendCm",
+				"sendCmdAndParams"
+			],
+			[
+				"sendBu",
+				"sendBufferLength"
+			],
+			[
 				"messageBu",
 				"messageBufferLength"
 			],
@@ -22,10 +42,6 @@
 			[
 				"ucha",
 				"ucharBuffer"
-			],
-			[
-				"me",
-				"messageBufferLength"
 			],
 			[
 				"message",
@@ -50,10 +66,6 @@
 			[
 				"ACTION_GETfIN",
 				"ACTION_GET_FINGURE_ADDRESS_LIST0"
-			],
-			[
-				"sendB",
-				"sendBufferLength"
 			],
 			[
 				"uint",
@@ -87,7 +99,26 @@
 			"file": "mcu-plc-fingure/mpf.c",
 			"settings":
 			{
-				"buffer_size": 12037,
+				"buffer_size": 18313,
+				"encoding": "UTF-8",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "mcu-plc-fingure/led.c",
+			"settings":
+			{
+				"buffer_size": 736,
+				"encoding": "UTF-8",
+				"line_ending": "Windows",
+				"name": "s"
+			}
+		},
+		{
+			"file": "/D/workspace2/git/sytec/company/ChangZhouYouRui/20170322mcu/double_encrypt_12AM.c",
+			"settings":
+			{
+				"buffer_size": 34126,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -96,7 +127,7 @@
 			"file": "mcu-plc-fingure/fingure.c",
 			"settings":
 			{
-				"buffer_size": 6925,
+				"buffer_size": 3791,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -111,12 +142,40 @@
 			}
 		},
 		{
+			"file": "/D/workspace/Qt/SimensKeyboard/mainwindow.cpp",
+			"settings":
+			{
+				"buffer_size": 1149,
+				"encoding": "UTF-8 with BOM",
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"contents": "                PowerButton{id:pButton1; powStr: \"1\"}\n                PowerButton{id:pButton2; powStr: \"2\"}\n                PowerButton{id:pButton3; powStr: \"3\"}\n                PowerButton{id:pButton4; powStr: \"4\"}\n                PowerButton{id:pButton5; powStr: \"5\"}\n                PowerButton{id:pButton6; powStr: \"6\"}\n                PowerButton{id:pButton7; powStr: \"7\"}\n                PowerButton{id:pButton8; powStr: \"8\"}\n                PowerButton{id:pButton9; powStr: \"9\"}",
+			"settings":
+			{
+				"buffer_size": 485,
+				"line_ending": "Windows",
+				"name": "PowerButton{id:pButton1; powStr: \""
+			}
+		},
+		{
 			"file": "mcu-plc-fingure/mpf.h",
 			"settings":
 			{
-				"buffer_size": 2985,
+				"buffer_size": 3188,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
+			}
+		},
+		{
+			"file": "mcu-plc-fingure/led.h",
+			"settings":
+			{
+				"buffer_size": 500,
+				"encoding": "UTF-8",
+				"line_ending": "Windows",
+				"name": "#in"
 			}
 		},
 		{
@@ -141,7 +200,7 @@
 			"file": "mcu-plc-fingure/fingure.h",
 			"settings":
 			{
-				"buffer_size": 1952,
+				"buffer_size": 2035,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -150,7 +209,7 @@
 			"file": "mcu-plc-fingure/event.h",
 			"settings":
 			{
-				"buffer_size": 1791,
+				"buffer_size": 1854,
 				"encoding": "UTF-8",
 				"line_ending": "Windows"
 			}
@@ -306,6 +365,9 @@
 	],
 	"file_history":
 	[
+		"/D/workspace2/Cpp/Qt/QtDemo/mainwindow.cpp",
+		"/D/workspace2/Cpp/startrun/Win32Project1/Win32Project1.cpp",
+		"/D/workspace-npm/fingure/go-backup/main.go",
 		"/D/workspace-npm/fingure/.gitignore",
 		"/D/workspace-npm/fingure/mcu-plc/mcu-plc.c",
 		"/D/workspace-npm/fingure/mcu-plc/mcu-plc.h",
@@ -348,6 +410,16 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"showSucess",
+			"SYMBOL",
+			"LED",
+			"sendCmdFunction",
+			"r4times",
+			"time36",
+			"random_num4",
+			"reBuildRandom",
+			"r4times",
+			"flag_ppor6",
 			"delay_msec(10);",
 			"writeX0",
 			"readucharTemp",
@@ -396,7 +468,7 @@
 	"groups":
 	[
 		{
-			"selected": 0,
+			"selected": 6,
 			"sheets":
 			[
 				{
@@ -405,15 +477,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 12037,
+						"buffer_size": 18313,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1551,
-								1551
+								17487,
+								17487
 							]
 						],
 						"settings":
@@ -423,27 +495,88 @@
 							"syntax": "Packages/C++/C.sublime-syntax"
 						},
 						"translation.x": 0.0,
-						"translation.y": 2337.0,
+						"translation.y": 25215.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 3,
 					"type": "text"
 				},
 				{
 					"buffer": 1,
-					"file": "mcu-plc-fingure/fingure.c",
+					"file": "mcu-plc-fingure/led.c",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 6925,
+						"buffer_size": 736,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3588,
-								3600
+								144,
+								124
+							]
+						],
+						"settings":
+						{
+							"auto_name": "s",
+							"is_init_dirty_state": false,
+							"origin_encoding": "UTF-8",
+							"syntax": "Packages/C++/C.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "/D/workspace2/git/sytec/company/ChangZhouYouRui/20170322mcu/double_encrypt_12AM.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 34126,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2012,
+								2012
+							]
+						],
+						"settings":
+						{
+							"is_init_dirty_state": false,
+							"origin_encoding": "UTF-8",
+							"syntax": "Packages/C++/C.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 2473.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 9,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"file": "mcu-plc-fingure/fingure.c",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3791,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3451,
+								3451
 							]
 						],
 						"settings":
@@ -455,14 +588,14 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 3949.0,
+						"translation.y": 5330.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 5,
 					"type": "text"
 				},
 				{
-					"buffer": 2,
+					"buffer": 4,
 					"file": "mcu-plc/mcu-plc.c",
 					"semi_transient": false,
 					"settings":
@@ -489,30 +622,122 @@
 						"translation.y": 6929.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 4,
+					"stack_index": 2,
 					"type": "text"
-				}
-			]
-		},
-		{
-			"selected": 0,
-			"sheets":
-			[
+				},
 				{
-					"buffer": 3,
-					"file": "mcu-plc-fingure/mpf.h",
+					"buffer": 5,
+					"file": "/D/workspace/Qt/SimensKeyboard/mainwindow.cpp",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2985,
+						"buffer_size": 1149,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								2985,
-								2985
+								190,
+								157
+							]
+						],
+						"settings":
+						{
+							"is_init_dirty_state": false,
+							"origin_encoding": "UTF-8 with BOM",
+							"syntax": "Packages/C++/C++.sublime-syntax",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 485,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								39,
+								31
+							],
+							[
+								93,
+								85
+							],
+							[
+								147,
+								139
+							],
+							[
+								201,
+								193
+							],
+							[
+								255,
+								247
+							],
+							[
+								309,
+								301
+							],
+							[
+								363,
+								355
+							],
+							[
+								417,
+								409
+							],
+							[
+								471,
+								463
+							]
+						],
+						"settings":
+						{
+							"auto_name": "PowerButton{id:pButton1; powStr: \"",
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				}
+			]
+		},
+		{
+			"selected": 4,
+			"sheets":
+			[
+				{
+					"buffer": 7,
+					"file": "mcu-plc-fingure/mpf.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 3188,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								2466,
+								2475
 							]
 						],
 						"settings":
@@ -521,15 +746,46 @@
 							"origin_encoding": "UTF-8",
 							"syntax": "Packages/C++/C++.sublime-syntax"
 						},
-						"translation.x": 1603.0,
-						"translation.y": 615.0,
+						"translation.x": 0.0,
+						"translation.y": 2460.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 2,
+					"stack_index": 7,
 					"type": "text"
 				},
 				{
-					"buffer": 4,
+					"buffer": 8,
+					"file": "mcu-plc-fingure/led.h",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 500,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								466,
+								411
+							]
+						],
+						"settings":
+						{
+							"auto_name": "#in",
+							"is_init_dirty_state": false,
+							"origin_encoding": "UTF-8",
+							"syntax": "Packages/C++/C++.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 8,
+					"type": "text"
+				},
+				{
+					"buffer": 9,
 					"file": "mcu-plc/mcu-plc.h",
 					"semi_transient": false,
 					"settings":
@@ -555,11 +811,11 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 5,
+					"stack_index": 12,
 					"type": "text"
 				},
 				{
-					"buffer": 5,
+					"buffer": 10,
 					"file": "mcu-plc-fingure/uart.h",
 					"semi_transient": false,
 					"settings":
@@ -585,24 +841,24 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 6,
+					"stack_index": 10,
 					"type": "text"
 				},
 				{
-					"buffer": 6,
+					"buffer": 11,
 					"file": "mcu-plc-fingure/fingure.h",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1952,
+						"buffer_size": 2035,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								398,
-								398
+								1998,
+								2018
 							]
 						],
 						"settings":
@@ -612,27 +868,27 @@
 							"syntax": "Packages/C++/C++.sublime-syntax"
 						},
 						"translation.x": 0.0,
-						"translation.y": 246.0,
+						"translation.y": 2829.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 3,
+					"stack_index": 6,
 					"type": "text"
 				},
 				{
-					"buffer": 7,
+					"buffer": 12,
 					"file": "mcu-plc-fingure/event.h",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1791,
+						"buffer_size": 1854,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								276,
-								276
+								35,
+								35
 							]
 						],
 						"settings":
@@ -642,10 +898,10 @@
 							"syntax": "Packages/C++/C++.sublime-syntax"
 						},
 						"translation.x": 0.0,
-						"translation.y": 0.0,
+						"translation.y": 123.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 7,
+					"stack_index": 11,
 					"type": "text"
 				}
 			]
@@ -679,7 +935,7 @@
 		"cols":
 		[
 			0.0,
-			0.552064826043,
+			0.766319497925,
 			1.0
 		],
 		"rows":

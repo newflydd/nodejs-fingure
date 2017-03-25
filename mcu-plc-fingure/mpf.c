@@ -87,9 +87,19 @@ void main(){
         if((sendCmdStatus ==  ACTION_GET_IMAGE_FOR_CHECK) && inputSignal){
             switch(inputSignal){
 	        	case 0x01:	//录入指纹
-		        	newFingureAddressIndex = getNewAddressIndexByPower(messageBuffer[3]);    //通过权限来构造一个空位置
-		            noFingureTimesWhenInput = 0;                                        //将录入指纹时的重复次数归零
-		            sendCmdStatus = ACTION_GET_IMAGE_FOR_INPUT1;
+	        		uintTemp = messageBuffer[1] * 100 + messageBuffer[2] * 10 + messageBuffer[3];
+	        		if(uintTemp == 0 || uintTemp >10){
+	        			showWarning();		//请求的权限为0或者>10,则立即报警
+	        			sendCmdStatus = ACTION_GET_IMAGE_FOR_CHECK;
+	        			delay(65535);
+	        			delay(65535);
+	        			delay(65535);
+	        			delay(65535);
+	        		}else{
+			        	newFingureAddressIndex = getNewAddressIndexByPower((uchar)uintTemp);    //通过权限来构造一个空位置
+			            noFingureTimesWhenInput = 0;                                        //将录入指纹时的重复次数归零
+			            sendCmdStatus = ACTION_GET_IMAGE_FOR_INPUT1;
+	        		}
 	        		break;
 	        	case 0x09:	//单个位置清空指纹
 	        		sendCmdStatus = ACTION_DELETE_ONE;
@@ -204,7 +214,7 @@ void sendCmdFunction(){
             sendCmdAndParams[1] = 0x01;
             buildSendCmd(2);
             uartSendBuffer(sendBuffer, sendBufferLength);
-            delay(65535);
+            delay(20000);
             break;
         case ACTION_SEARCH:
             sendCmdAndParams[0] = 0x04;
@@ -215,7 +225,7 @@ void sendCmdFunction(){
             sendCmdAndParams[5] = 0xE7;
             buildSendCmd(6);
             uartSendBuffer(sendBuffer, sendBufferLength);
-            delay(65535);
+            delay(20000);
             break;
         case ACTION_GET_FINGURE_ADDRESS_LIST0:
             sendCmdAndParams[0] = 0x1F;
@@ -261,20 +271,20 @@ void sendCmdFunction(){
             sendCmdAndParams[1] = 0x01;
             buildSendCmd(2);
             uartSendBuffer(sendBuffer, sendBufferLength);
-            delay(65535);
+            delay(20000);
             break;
         case ACTION_BUILD_CB2_FOR_INPUT:
             sendCmdAndParams[0] = 0x02;
             sendCmdAndParams[1] = 0x02;
             buildSendCmd(2);
             uartSendBuffer(sendBuffer, sendBufferLength);
-            delay(65535);
+            delay(20000);
             break;
         case ACTION_MEARGE_CODE:
             sendCmdAndParams[0] = 0x05;
             buildSendCmd(1);
             uartSendBuffer(sendBuffer, sendBufferLength);
-            delay(65535);
+            delay(20000);
             break;
         case ACTION_SAVE_ADDRESS:
             sendCmdAndParams[0] = 0x06;
@@ -283,13 +293,13 @@ void sendCmdFunction(){
             sendCmdAndParams[3] = (uchar)newFingureAddressIndex;
             buildSendCmd(4);
             uartSendBuffer(sendBuffer, sendBufferLength);
-            delay(65535);
+            delay(20000);
             break;
         case ACTION_CLEAN_ALL:		//清空指纹库
         	sendCmdAndParams[0] = 0x0D;
         	buildSendCmd(1);
         	uartSendBuffer(sendBuffer, sendBufferLength);
-        	delay(65535);
+        	delay(20000);
         	break;
         case ACTION_DELETE_ONE:		//删除特定位置指纹
         	sendCmdAndParams[0] = 0x0C;
@@ -300,7 +310,7 @@ void sendCmdFunction(){
         	sendCmdAndParams[4] = 0x01;
         	buildSendCmd(5);
         	uartSendBuffer(sendBuffer, sendBufferLength);
-        	delay(65535);
+        	delay(20000);
         	break;
     }
 }
@@ -627,7 +637,7 @@ uchar processPLCInput(uchar dat){
 			}
 			return 0x00;
 		case 0x0E:
-			delay(50);							//延时，再读一次，确保稳定
+			//delay(10);							//延时，再读一次，确保稳定
 			if(readPLCIOH4() == 0x0E){
 				messageReadble = 1;				//打开接受数据开关，准备接受E后面的数据
 				writePLCIOL4(0x0E);
