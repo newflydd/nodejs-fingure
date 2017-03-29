@@ -1,6 +1,8 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
 
+import com.newflypig.Finger 1.0
+
 ApplicationWindow {
     id:root
     visible: true
@@ -43,12 +45,12 @@ ApplicationWindow {
                             font.family: "微软雅黑"
                         }
                         Text{color: "white";anchors.verticalCenter: parent.verticalCenter;font.family: "微软雅黑";
-                            text: power + ""
+                            text: power
                             width:50
                             font.pixelSize: 15
                         }
                         Text{color: "white";anchors.verticalCenter: parent.verticalCenter;font.family: "微软雅黑";
-                            text: fid + ""
+                            text: fid
                             width:20
                             horizontalAlignment: Text.AlignRight
                             font.pixelSize: 15
@@ -84,7 +86,10 @@ ApplicationWindow {
                             font.family: "微软雅黑"
                             font.pixelSize: 15
                             onTriggered: {
-                                fingerListModel.removeFid(fid)
+                                if(!fingerModual.deleteFingerAddress(parseInt(fid))){
+                                    taMessage.append("成功删除 " + fid + " 号位置指纹")
+                                    fingerListModel.removeFid(fid)
+                                }
                             }
                         }
                     }
@@ -99,6 +104,7 @@ ApplicationWindow {
             spacing: 10
 
             TextField {
+                id: tfName
                 placeholderText: "姓名"
                 width: 220
                 selectByMouse: true
@@ -123,11 +129,13 @@ ApplicationWindow {
             Row{
                 spacing: 30
                 Button {
+                    id: buttonInput
                     text: "录入指纹"
                     width: 95
-                    onClicked: console.log(intPower);
+                    onClicked: fingerInput();
                 }
                 Rectangle{
+                    id: input1Circle
                     width: 30
                     height: 30
                     color: "white"
@@ -136,6 +144,7 @@ ApplicationWindow {
                 }
 
                 Rectangle{
+                    id: input2Circle
                     width: 30
                     height: 30
                     color: "white"
@@ -147,6 +156,21 @@ ApplicationWindow {
             Button{
                 text: "验证测试"
                 width: 220
+                onClicked: {
+                    taMessage.append("准备验证指纹")
+                    taMessage.append("请将手指置于指纹采集器上，否则系统将于20秒后停止采集")
+
+                    searchFingerTimer.start()
+                }
+                Timer{
+                    id: searchFingerTimer
+                    interval: 500;
+                    running: false;
+                    repeat: false;
+                    onTriggered: {
+                        searchFinger()
+                    }
+                }
             }
 
             Row {
@@ -154,24 +178,32 @@ ApplicationWindow {
                 Button{
                     text: "备份指纹库"
                     width: 220
+                    onClicked: fingerModual.backupFingerAddress()
                 }
 
                 Button{
                     text: "还原指纹库"
                     width: 220
+                    onClicked: fingerModual.restoreFingerAddress()
                 }
             }
 
-            TextArea {
+            Flickable {
+                id: flickable
                 width: parent.width - 55
                 height:parent.height - 230
-                background: Rectangle{
-                    color: "#2E2F30"
+
+                TextArea.flickable: TextArea {
+                    id: taMessage
+                    wrapMode: TextArea.Wrap
+                    background: Rectangle{
+                        color: "#2E2F30"
+                    }
+                    readOnly: true
+                    color: "#38FF28"
+                    selectByMouse: true
                 }
-                readOnly: true
-                color: "#38FF28"
-                text: "提示消息..."
-                selectByMouse: true
+                ScrollBar.vertical: ScrollBar { }
             }
         }
     }
@@ -190,6 +222,89 @@ ApplicationWindow {
         var list = powerButtons.children;
         for (var i in list){
             list[i].color = "#4A5459";
+        }
+    }
+
+    //第二次录入指纹的定时器
+    Timer{
+        id:input2Timer
+        interval: 1000
+        running: false
+        repeat: false
+        onTriggered: {
+            var result = fingerModual.input2(intPower, tfName.text);
+            input2Circle.color = "white"
+            if(result >= 0){
+                taMessage.append("指纹录入成功，保存于指纹库 " + result + " 号位置")                
+                fingerListModel.append({
+                    fid: fingerModual.returnFid,
+                    name: tfName.text===""?"无名":tfName.text,
+                    power: (parseInt(result/100) + 1) + ""
+                })
+            }else if(result === -2){
+                taMessage.append("两次采集的指纹特征差异太大，录入失败")
+            }else{
+                taMessage.append("采集失败，error code:" + result)
+            }
+        }
+    }
+
+    //第一次录入指纹的定时器 @TODO:记录日志，防止UI阻塞可用Timer
+    Timer{
+        id:input1Timer
+        interval: 500
+        running: false
+        repeat: false
+        onTriggered: {
+            var result = fingerModual.input1();
+            input1Circle.color = "white"
+            if(result === 0){
+                taMessage.append("第一次采集成功，准备采集第二次，请将手指放在采集器上")
+                input2Circle.color = "#66A334"
+                input2Timer.start()
+            }else{
+                taMessage.append("采集失败，error code:" + result)
+            }
+        }
+    }
+
+    //录入指纹
+    function fingerInput(){
+        taMessage.append("请将手指放在采集器上录入第一次指纹")
+        input1Circle.color = "#66A334"
+        input1Timer.start()
+    }
+
+    //搜索指纹
+    function searchFinger(){
+        var result = fingerModual.search();
+        if(result === -1)
+            taMessage.append("采集超时，请重试")
+        else if(result === -2)
+            taMessage.append("没有匹配到任何指纹，请重试")
+        else
+            taMessage.append("成功匹配到" + result + "号指纹，姓名：" + fingerModual.searchName)
+    }
+
+    Component.onCompleted: {
+        var result
+        taMessage.append("正在连接指纹模块...")
+        if(fingerModual.connect()){
+            taMessage.append("连接指纹模块「失败」，目前处于离线状态，相关操作无法使用，请检查连接。")
+        }else{
+            taMessage.append("连接指纹模块「成功」")
+            result = fingerModual.buildFingerList()
+            if(result !== -1){
+                taMessage.append("构造指纹库成功，从指纹模块读取 " + result + " 个指纹数据")
+                for(var i = 0; i < result; i++){
+                    fingerListModel.append({
+                        fid: fingerModual.objFingerList[i].fid,
+                        power: fingerModual.objFingerList[i].power,
+                        name: fingerModual.objFingerList[i].name
+                    });
+                }
+            } else
+                taMessage.append("构造指纹库失败")
         }
     }
 }

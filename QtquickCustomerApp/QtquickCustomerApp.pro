@@ -1,8 +1,11 @@
-QT += qml quick
+QT += qml quick sql
 
 CONFIG += c++11
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    fingermodual.cpp \
+    finger.cpp \
+    daowrap.cpp
 
 RESOURCES += qml.qrc
 
@@ -29,3 +32,14 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 DISTFILES +=
+
+HEADERS += \
+    fingermodual.h \
+    ARITH_LIB.h \
+    Protocol.h \
+    finger.h \
+    daowrap.h
+
+LIBS += \
+    "D:\\workspace-npm\\fingure\\cpp-backup\\ARITH_LIB.lib" \
+    "D:\\workspace-npm\\fingure\\cpp-backup\\SynoAPIEx.lib"
