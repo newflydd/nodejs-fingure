@@ -100,6 +100,7 @@ int FingerModual::input2(int power,QString name){
 
     //更新数据库数据
     dao->updateName(fid, name);
+    this->backupFingerAddress(fid);
 
     //更新returnFid方便前端UI使用
     this->m_returnFid = QString("%1").arg(fid, 3, 10, QChar('0'));
@@ -218,17 +219,40 @@ int FingerModual::backupFingerAddress(){
 }
 
 /**
+ * @brief 更新具体位置指纹特征码到数据库
+ * 以内存中的数据列表为准，对每个位置拉取二进制特征码，保存到数据库
+ */
+int FingerModual::backupFingerAddress(int fid){
+    uchar charTempletBuffer[512];           //指纹特征码模板缓冲区
+    int   charTempletLength;                //特征码大小
+    PSLoadChar(pHandle, 0xFFFFFFFF, 1, fid);
+    PSUpChar(pHandle, 0xFFFFFFFF, 1, charTempletBuffer, &charTempletLength);
+    dao->updateCode(fid, charTempletBuffer);
+
+    return 0;
+}
+
+/**
  * @brief 还原数据库
  * @return 从本地数据库中获得所有code不为NULL的数据，并将其存储到指纹模块
  */
 int FingerModual::restoreFingerAddress(){
     QList<Finger*> list = dao->getFingerList();
+
+    this->fingerList.clear();   //清空内存模型
+    this->clear();              //清空指纹模块中所有数据
+
+    //还原，并添加到内存模型
     for(int i = 0; i < list.length();i++){
         PSDownChar(pHandle, 0xFFFFFFFF, 1, (uchar*)list.at(i)->m_code.data(), 512);
         PSStoreChar(pHandle, 0xFFFFFFFF, 1, list.at(i)->m_intFid);
-        qDebug()<<"restore No."<<list.at(i)->m_intFid<<"sucess";
+        this->fingerList.append(list.at(i));
     }
     return 0;
+}
+
+int FingerModual::clear(){
+    return PSEmpty(pHandle, 0xFFFFFFFF);
 }
 
 

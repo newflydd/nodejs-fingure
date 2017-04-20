@@ -14,10 +14,10 @@
 #endif
 
 /* 交互反馈的LED灯 */
-sbit LED_WARNING = P0 ^ 6;
-sbit LED_CHECK   = P0 ^ 7;
-sbit LED_INPUT1  = P3 ^ 7;
-sbit LED_INPUT2  = P3 ^ 6;
+sbit LED_WARNING = P1 ^ 4;
+sbit LED_CHECK   = P1 ^ 5;
+sbit LED_INPUT1  = P1 ^ 6;
+sbit LED_INPUT2  = P1 ^ 7;
 
 extern uchar ucharTemp;
 

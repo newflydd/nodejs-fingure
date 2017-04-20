@@ -1,4 +1,5 @@
 QT += qml quick sql
+RC_FILE += ICON.RC
 
 CONFIG += c++11
 

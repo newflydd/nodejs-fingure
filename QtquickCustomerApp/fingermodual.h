@@ -18,7 +18,7 @@
 #pragma comment(lib,"D:\\workspace-npm\\fingure\\cpp-backup\\ARITH_LIB.lib")
 #pragma comment(lib,"D:\\workspace-npm\\fingure\\cpp-backup\\SynoAPIEx.lib")
 
-//@TODO: 记录日志，QML中使用C++对象和方法
+//QML中使用C++对象和方法
 class FingerModual : public QObject
 {
     Q_OBJECT
@@ -51,6 +51,8 @@ private:
     QString m_searchName;
     QString m_returnFid;
     DaoWrap* dao;
+    int backupFingerAddress(int fid);
+    int clear();    //清空指纹模块数据
 };
 
 #endif // FINGERMODUAL_H

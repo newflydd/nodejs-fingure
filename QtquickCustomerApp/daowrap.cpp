@@ -95,18 +95,20 @@ void DaoWrap::updateCode(int fid, uchar* code512){
     query.exec();
 }
 
-//从数据库中取得fid对应的特征码
+//从数据库中取得指纹列表
 QList<Finger*> DaoWrap::getFingerList(){
     QList<Finger*> list;
     QSqlQuery query{database};
-    QString strSql = QString("select fid,code from finger where code is not null");
+    QString strSql = QString("select fid,code,name from finger where code is not null order by fid");
     query.exec(strSql);
     while(query.next()){
         int fid = query.value(0).toInt();
         QByteArray byte = query.value(1).toByteArray();
+        QString name = query.value(2).toString();
         Finger* finger = new Finger();
         finger->setIntFid(fid);
         finger->m_code = byte;
+        finger->setName(name);
         list.append(finger);
     }
     return list;

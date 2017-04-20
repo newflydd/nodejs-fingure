@@ -6,6 +6,13 @@ void delay(uint num){
 
 //启动初始化
 void initMain(){
+    /* 将LED拉高 */
+    LED_WARNING = 1;
+    LED_CHECK   = 1;
+    LED_INPUT1  = 1;
+    LED_INPUT2  = 1;
+    showWarning();
+
     //初始化发送指令前7个byte
     for(ucharTemp = 0; ucharTemp < 7; ucharTemp ++){
         sendBuffer[ucharTemp] = sendPackageHeader[ucharTemp];
@@ -22,6 +29,12 @@ void initMain(){
     EA = 1;     //总中断开关打开
 
     writePLCIOL4(0x0B);		//初始化输出口为B
+
+    /* 初始化高4位，让其可读 */
+    OUTPUT0 = 1;
+    OUTPUT1 = 1;
+    OUTPUT2 = 1;
+    OUTPUT3 = 1;
 }
 
 void main(){
@@ -79,9 +92,8 @@ void main(){
          * 如果没有录入通知，则发送验证命令
          */
         inputSignal = checkInputSignal();
-
         if(inputSignal == 0xFF){		//如果PLC返回信号在0xFF说明目前跟PLC在通讯的中途，为了加快通信，需要立即返回。
-        	continue;
+            continue;
         }
 
         if((sendCmdStatus ==  ACTION_GET_IMAGE_FOR_CHECK) && inputSignal){
@@ -199,11 +211,9 @@ void sendCmdFunction(){
     receiveEventStatus = 0;
     waitForReceive = 1;
     receiveBufferLength = 0;
-
     switch(sendCmdStatus){
         case ACTION_GET_IMAGE_FOR_CHECK:
         	showCheck();
-            P1 = display_code[10];
             sendCmdAndParams[0] = 0x01;
             buildSendCmd(1);
             uartSendBuffer(sendBuffer, sendBufferLength);
@@ -253,7 +263,6 @@ void sendCmdFunction(){
             break;
         case ACTION_GET_IMAGE_FOR_INPUT1:
         	showInput1();
-            P1 = display_code[11];
             sendCmdAndParams[0] = 0x01;
             buildSendCmd(1);
             uartSendBuffer(sendBuffer, sendBufferLength);
@@ -354,15 +363,12 @@ void receiveEventFunction(){
                 bcdBuffer[0] = uintTemp / 100 + 1;
 				sendPLCMessage();
 
-				//@TODO:在数码管上测试，需要删掉
                 uintTemp = uintTemp / 100;
-                P1 = display_code[uintTemp + 1];
                 sendCmdStatus = ACTION_GET_IMAGE_FOR_CHECK;
                 showSuccess();
             }else{
                 //搜索失败
                 showWarning();
-                P1 = 0x3F;
                 sendCmdStatus = ACTION_GET_IMAGE_FOR_CHECK;
                 delay(65535);
                 delay(65535);
@@ -500,12 +506,21 @@ void receiveEventFunction(){
 uchar checkInputSignal(){
 	//读GPIO_PLCIO高4位
     ucharTemp = readPLCIOH4();
-
    	return processPLCInput(ucharTemp);
 }
 
 uchar readPLCIOH4(){
-	return GPIO_PLCIO>>4;
+    uchar result = 0x00;
+    if(OUTPUT3)
+        result += 1;
+    if(OUTPUT2)
+        result += 2;
+    if(OUTPUT1)
+        result += 4;
+    if(OUTPUT0)
+        result += 8;
+
+	return result;
 }
 
 void  writePLCIOL4(uchar dat){

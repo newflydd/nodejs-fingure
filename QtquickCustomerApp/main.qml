@@ -1,7 +1,7 @@
 import QtQuick 2.7
 import QtQuick.Controls 2.0
 
-import com.newflypig.Finger 1.0
+import com.newflypig.Finger 1.0 //来自于C++类finger.h和finger.cpp
 
 ApplicationWindow {
     id:root
@@ -11,19 +11,20 @@ ApplicationWindow {
     title: qsTr("赛洋面板指纹模块辅助工具")
 
     property int intPower: 1
+    property bool connected: false
 
     Row {
         spacing: 0
         width: 800
         height: parent.height
 
-        //左部列表 @TODO: 记录日志： ListView的MVC模型
+        //左部列表 ListView的MVC模型
         Rectangle {
             width: 300; height: parent.height; color: "#4A5459"
             ListView {
                 anchors.fill: parent
-                model: FingerListModel{id:fingerListModel}
-                delegate: Rectangle{
+                model: FingerListModel{id:fingerListModel}  //MVC中的Model层，来自于FingerListModel.qml
+                delegate: Rectangle{                        //Rectangle是MVC中的View层描述。其中的MouseArea以及Menu等描述，可理解为Control层
                     id: fingerListDelegate
                     width: parent.width; height: 60
                     color: "#4A5459"
@@ -56,7 +57,7 @@ ApplicationWindow {
                             font.pixelSize: 15
                         }
                     }
-                    //@TODO: 记录日志，鼠标进入，hover，右击菜单
+                    //鼠标进入，hover样式改变，右击菜单
                     MouseArea{
                         id:mouseMA;
                         acceptedButtons: Qt.RightButton
@@ -70,7 +71,7 @@ ApplicationWindow {
                         onExited:{
                             fingerListDelegate.color = "#4A5459"
                         }
-                        onClicked: {
+                        onClicked: {    //右击菜单
                             contextMenu.x = mouseMA.mouseX;
                             contextMenu.y = mouseMA.mouseY;
                             contextMenu.fid = fid;
@@ -85,6 +86,7 @@ ApplicationWindow {
                             text: "删除"
                             font.family: "微软雅黑"
                             font.pixelSize: 15
+                            enabled: connected
                             onTriggered: {
                                 if(!fingerModual.deleteFingerAddress(parseInt(fid))){
                                     taMessage.append("成功删除 " + fid + " 号位置指纹")
@@ -114,7 +116,7 @@ ApplicationWindow {
             Row {
                 id:powerButtons
                 spacing: 5
-                PowerButton{id:pButton1; powStr: "1"}
+                PowerButton{id:pButton1; powStr: "1"}   //PowerButton来自于PowerButton.qml是一个个小小的权限按钮，点击后变色，并且全局权限改变
                 PowerButton{id:pButton2; powStr: "2"}
                 PowerButton{id:pButton3; powStr: "3"}
                 PowerButton{id:pButton4; powStr: "4"}
@@ -132,6 +134,7 @@ ApplicationWindow {
                     id: buttonInput
                     text: "录入指纹"
                     width: 95
+                    enabled: connected
                     onClicked: fingerInput();
                 }
                 Rectangle{
@@ -156,6 +159,7 @@ ApplicationWindow {
             Button{
                 text: "验证测试"
                 width: 220
+                enabled: connected
                 onClicked: {
                     taMessage.append("准备验证指纹")
                     taMessage.append("请将手指置于指纹采集器上，否则系统将于20秒后停止采集")
@@ -178,13 +182,22 @@ ApplicationWindow {
                 Button{
                     text: "备份指纹库"
                     width: 220
-                    onClicked: fingerModual.backupFingerAddress()
+                    enabled: connected
+                    onClicked: {
+                        fingerModual.backupFingerAddress()
+                        taMessage.append("成功备份 " + fingerModual.objFingerList.length + "个指纹数据到数据库")
+                    }
                 }
 
                 Button{
                     text: "还原指纹库"
                     width: 220
-                    onClicked: fingerModual.restoreFingerAddress()
+                    enabled: connected
+                    onClicked: {
+                        fingerModual.restoreFingerAddress()
+                        updateModel();
+                        taMessage.append("成功还原 " + fingerModual.objFingerList.length +" 个指纹数据")
+                    }
                 }
             }
 
@@ -217,7 +230,7 @@ ApplicationWindow {
         source: "images/finger3.png"
     }
 
-    //@TODO: 记录日志： 使用children访问子元素，使用for i in list的方式遍历
+    //使用children访问子元素，使用for i in list的方式遍历
     function changeAllPowerButtonColor(){
         var list = powerButtons.children;
         for (var i in list){
@@ -249,7 +262,7 @@ ApplicationWindow {
         }
     }
 
-    //第一次录入指纹的定时器 @TODO:记录日志，防止UI阻塞可用Timer
+    //第一次录入指纹的定时器。防止UI阻塞可用Timer
     Timer{
         id:input1Timer
         interval: 500
@@ -291,20 +304,28 @@ ApplicationWindow {
         taMessage.append("正在连接指纹模块...")
         if(fingerModual.connect()){
             taMessage.append("连接指纹模块「失败」，目前处于离线状态，相关操作无法使用，请检查连接。")
+            connected = false;
         }else{
             taMessage.append("连接指纹模块「成功」")
             result = fingerModual.buildFingerList()
             if(result !== -1){
                 taMessage.append("构造指纹库成功，从指纹模块读取 " + result + " 个指纹数据")
-                for(var i = 0; i < result; i++){
-                    fingerListModel.append({
-                        fid: fingerModual.objFingerList[i].fid,
-                        power: fingerModual.objFingerList[i].power,
-                        name: fingerModual.objFingerList[i].name
-                    });
-                }
-            } else
+                updateModel();
+                connected = true;
+            } else {
                 taMessage.append("构造指纹库失败")
+            }
+        }
+    }
+
+    function updateModel(){
+        fingerListModel.clear();
+        for(var i = 0; i < fingerModual.objFingerList.length; i++){
+            fingerListModel.append({
+                fid: fingerModual.objFingerList[i].fid,
+                power: fingerModual.objFingerList[i].power,
+                name: fingerModual.objFingerList[i].name===""?"无名":fingerModual.objFingerList[i].name
+            });
         }
     }
 }

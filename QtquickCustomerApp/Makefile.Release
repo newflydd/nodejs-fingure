@@ -17,13 +17,13 @@ CXXFLAGS      = -nologo -Zc:wchar_t -FS -Zc:strictStrings -Zc:throwingNew -O2 -M
 INCPATH       = -I. -I..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include -I..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtQuick -I..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtGui -I..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtANGLE -I..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtQml -I..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtNetwork -I..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtSql -I..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore -Irelease -I..\..\..\Qt\Qt5.8.0\5.8\msvc2015\mkspecs\win32-msvc2015 
 LINKER        = link
 LFLAGS        = /NOLOGO /DYNAMICBASE /NXCOMPAT /INCREMENTAL:NO /SUBSYSTEM:WINDOWS "/MANIFESTDEPENDENCY:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'"
-LIBS          = /LIBPATH:D:\Qt\Qt5.8.0\5.8\msvc2015\lib D:\Qt\Qt5.8.0\5.8\msvc2015\lib\qtmain.lib /LIBPATH:C:\utils\my_sql\my_sql\lib /LIBPATH:C:\utils\postgresql\pgsql\lib shell32.lib D:\workspace-npm\fingure\cpp-backup\ARITH_LIB.lib D:\workspace-npm\fingure\cpp-backup\SynoAPIEx.lib D:\Qt\Qt5.8.0\5.8\msvc2015\lib\Qt5Quick.lib D:\Qt\Qt5.8.0\5.8\msvc2015\lib\Qt5Gui.lib D:\Qt\Qt5.8.0\5.8\msvc2015\lib\Qt5Qml.lib D:\Qt\Qt5.8.0\5.8\msvc2015\lib\Qt5Network.lib D:\Qt\Qt5.8.0\5.8\msvc2015\lib\Qt5Sql.lib D:\Qt\Qt5.8.0\5.8\msvc2015\lib\Qt5Core.lib 
+LIBS          = /LIBPATH:D:\Qt\Qt5.8.0\5.8\msvc2015\lib D:\Qt\Qt5.8.0\5.8\msvc2015\lib\qtmain.lib /LIBPATH:C:\utils\my_sql\my_sql\lib /LIBPATH:C:\utils\postgresql\pgsql\lib shell32.lib D:\workspace-npm\fingure\cpp-backup\ARITH_LIB.lib D:\workspace-npm\fingure\cpp-backup\SynoAPIEx.lib D:\Qt\Qt5.8.0\5.8\msvc2015\lib\Qt5Quick.lib D:\Qt\Qt5.8.0\5.8\msvc2015\lib\Qt5Gui.lib D:\Qt\Qt5.8.0\5.8\msvc2015\lib\Qt5Qml.lib D:\Qt\Qt5.8.0\5.8\msvc2015\lib\Qt5Network.lib D:\Qt\Qt5.8.0\5.8\msvc2015\lib\Qt5Sql.lib D:\Qt\Qt5.8.0\5.8\msvc2015\lib\Qt5Core.lib release\ICON.RC 
 QMAKE         = D:\Qt\Qt5.8.0\5.8\msvc2015\bin\qmake.exe
 IDC           = idc
 IDL           = midl
 ZIP           = zip -r -9
 DEF_FILE      = 
-RES_FILE      = 
+RES_FILE      = release\ICON.RC
 COPY          = copy /y
 SED           = $(QMAKE) -install sed
 COPY_FILE     = copy /y
@@ -119,10 +119,13 @@ DESTDIR_TARGET = release\QtquickCustomerApp.exe
 first: all
 all: Makefile.Release  $(DESTDIR_TARGET)
 
-$(DESTDIR_TARGET):  $(OBJECTS) 
+$(DESTDIR_TARGET):  $(OBJECTS) release\ICON.RC
 	$(LINKER) $(LFLAGS) /MANIFEST:embed /OUT:$(DESTDIR_TARGET) @<<
 $(OBJECTS) $(LIBS)
 <<
+
+release\ICON.RC: ICON.RC
+	rc $(DEFINES) -fo release\ICON.RC ICON.RC
 
 qmake: FORCE
 	@$(QMAKE) -o Makefile.Release QtquickCustomerApp.pro -spec win32-msvc2015
@@ -135,6 +138,7 @@ dist:
 clean: compiler_clean 
 	-$(DEL_FILE) release\main.obj release\fingermodual.obj release\finger.obj release\daowrap.obj release\qrc_qml.obj release\moc_fingermodual.obj release\moc_finger.obj
 	-$(DEL_FILE) release\QtquickCustomerApp.exp
+	-$(DEL_FILE) release\ICON.RC
 
 distclean: clean 
 	-$(DEL_FILE) .qmake.stash release\QtquickCustomerApp.lib
@@ -258,6 +262,15 @@ release\moc_fingermodual.cpp: ..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\QO
 		Protocol.h \
 		finger.h \
 		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\QString \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\QByteArray \
+		daowrap.h \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtSql\QSqlDatabase \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtSql\qsqldatabase.h \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtSql\qtsqlglobal.h \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtSql\QSqlError \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtSql\qsqlerror.h \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtSql\QSqlQuery \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtSql\qsqlquery.h \
 		fingermodual.h \
 		release\moc_predefs.h \
 		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\bin\moc.exe
@@ -312,6 +325,7 @@ release\moc_finger.cpp: ..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\QObject 
 		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qcontainerfwd.h \
 		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qobject_impl.h \
 		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\QString \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\QByteArray \
 		finger.h \
 		release\moc_predefs.h \
 		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\bin\moc.exe
@@ -453,7 +467,16 @@ release\main.obj: main.cpp ..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtGui\QGuiAp
 		ARITH_LIB.h \
 		Protocol.h \
 		finger.h \
-		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\QString
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\QString \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\QByteArray \
+		daowrap.h \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtSql\QSqlDatabase \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtSql\qsqldatabase.h \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtSql\qtsqlglobal.h \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtSql\QSqlError \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtSql\qsqlerror.h \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtSql\QSqlQuery \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtSql\qsqlquery.h
 
 release\fingermodual.obj: fingermodual.cpp ..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\QtDebug \
 		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qdebug.h \
@@ -545,7 +568,15 @@ release\fingermodual.obj: fingermodual.cpp ..\..\..\Qt\Qt5.8.0\5.8\msvc2015\incl
 		Protocol.h \
 		finger.h \
 		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\QString \
-		daowrap.h
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\QByteArray \
+		daowrap.h \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtSql\QSqlDatabase \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtSql\qsqldatabase.h \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtSql\qtsqlglobal.h \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtSql\QSqlError \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtSql\qsqlerror.h \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtSql\QSqlQuery \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtSql\qsqlquery.h
 
 release\finger.obj: finger.cpp ..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\QChar \
 		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qchar.h \
@@ -597,11 +628,12 @@ release\finger.obj: finger.cpp ..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\Q
 		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qvarlengtharray.h \
 		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qcontainerfwd.h \
 		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qobject_impl.h \
-		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\QString
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\QString \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\QByteArray
 
-release\daowrap.obj: daowrap.cpp ..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtSql\QSqlDatabase \
-		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtSql\qsqldatabase.h \
-		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtSql\qtsqlglobal.h \
+release\daowrap.obj: daowrap.cpp ..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\QDebug \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qdebug.h \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qalgorithms.h \
 		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qglobal.h \
 		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qconfig-bootstrapped.h \
 		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qconfig.h \
@@ -624,26 +656,19 @@ release\daowrap.obj: daowrap.cpp ..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtSql\
 		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qmutex.h \
 		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qnumeric.h \
 		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qversiontagging.h \
-		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qstring.h \
-		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qchar.h \
-		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qbytearray.h \
-		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qrefcount.h \
-		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qnamespace.h \
-		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qarraydata.h \
-		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qstringbuilder.h \
-		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtSql\QSqlError \
-		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtSql\qsqlerror.h \
-		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtSql\QSqlQuery \
-		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtSql\qsqlquery.h \
-		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\QDebug \
-		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qdebug.h \
-		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qalgorithms.h \
 		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qhash.h \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qchar.h \
 		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qiterator.h \
 		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qlist.h \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qrefcount.h \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qarraydata.h \
 		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qhashfunctions.h \
 		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qpair.h \
 		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qbytearraylist.h \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qbytearray.h \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qnamespace.h \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qstring.h \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qstringbuilder.h \
 		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qstringlist.h \
 		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qregexp.h \
 		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qstringmatcher.h \
@@ -668,8 +693,36 @@ release\daowrap.obj: daowrap.cpp ..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtSql\
 		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qcontiguouscache.h \
 		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qsharedpointer.h \
 		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qsharedpointer_impl.h \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\QByteArray \
 		daowrap.h \
-		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\QString
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtSql\QSqlDatabase \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtSql\qsqldatabase.h \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtSql\qtsqlglobal.h \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtSql\QSqlError \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtSql\qsqlerror.h \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtSql\QSqlQuery \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtSql\qsqlquery.h \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\QString \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtGui\QList \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtGui\qevent.h \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtGui\qtguiglobal.h \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtGui\qtgui-config.h \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtGui\qwindowdefs.h \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtGui\qwindowdefs_win.h \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtGui\qregion.h \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qrect.h \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qmargins.h \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qsize.h \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qdatastream.h \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtGui\qkeysequence.h \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qurl.h \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qurlquery.h \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qfile.h \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\qfiledevice.h \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtGui\qvector2d.h \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtGui\qtouchdevice.h \
+		finger.h \
+		..\..\..\Qt\Qt5.8.0\5.8\msvc2015\include\QtCore\QObject
 
 release\qrc_qml.obj: release\qrc_qml.cpp 
 
