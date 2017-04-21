@@ -30,11 +30,11 @@ void initMain(){
 
     writePLCIOL4(0x0B);		//初始化输出口为B
 
-    /* 初始化高4位，让其可读 */
-    OUTPUT0 = 1;
-    OUTPUT1 = 1;
-    OUTPUT2 = 1;
-    OUTPUT3 = 1;
+    /* 初始化4位输入位，让其可读 */
+    INPUT0 = 1;
+    INPUT1 = 1;
+    INPUT2 = 1;
+    INPUT3 = 1;
 }
 
 void main(){
@@ -511,21 +511,26 @@ uchar checkInputSignal(){
 
 uchar readPLCIOH4(){
     uchar result = 0x00;
-    if(OUTPUT3)
+    if(INPUT3)
         result += 1;
-    if(OUTPUT2)
+    if(INPUT2)
         result += 2;
-    if(OUTPUT1)
+    if(INPUT1)
         result += 4;
-    if(OUTPUT0)
+    if(INPUT0)
         result += 8;
 
 	return result;
 }
 
 void  writePLCIOL4(uchar dat){
-	ucharTemp = GPIO_PLCIO & 0xF0;
-	GPIO_PLCIO = ucharTemp | dat;
+	//ucharTemp = GPIO_PLCIO & 0xF0;
+	//GPIO_PLCIO = ucharTemp | dat;
+
+    OUTPUT3 = dat & 0x01;
+    OUTPUT2 = dat >> 1 & 0x01;
+    OUTPUT1 = dat >> 2 & 0x01;
+    OUTPUT0 = dat >> 3 & 0x01;
 }
 
 uchar sendPLCMessage(){
@@ -646,11 +651,17 @@ uchar processPLCInput(uchar dat){
 	switch(dat){
 		case 0x0B:
 			writePLCIOL4(0x0B);					//反馈一个信号
-			if(messageBufferLength != 0){
+			if(messageBufferLength ==0){
+                return 0x00;
+            }else if(messageBufferLength == 4){
 				messageBufferLength = 0;		//清空消息寄存器
 				return messageBuffer[0];		//处理消息寄存器
-			}
-			return 0x00;
+			}else{
+                messageBufferLength = 0;
+                showWarning();
+                delay(5000);
+                return 0x00;
+            }
 		case 0x0E:
 			//delay(10);							//延时，再读一次，确保稳定
 			if(readPLCIOH4() == 0x0E){

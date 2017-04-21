@@ -17,10 +17,15 @@
 //高4位输入，低4位输出
 #define GPIO_PLCIO P2
 
-sbit OUTPUT0 = GPIO_PLCIO ^ 7;
-sbit OUTPUT1 = GPIO_PLCIO ^ 6;
-sbit OUTPUT2 = GPIO_PLCIO ^ 5;
-sbit OUTPUT3 = GPIO_PLCIO ^ 4;
+sbit INPUT0 = GPIO_PLCIO ^ 7;
+sbit INPUT1 = GPIO_PLCIO ^ 6;
+sbit INPUT2 = GPIO_PLCIO ^ 5;
+sbit INPUT3 = GPIO_PLCIO ^ 4;
+
+sbit OUTPUT0 = GPIO_PLCIO ^ 3;
+sbit OUTPUT1 = GPIO_PLCIO ^ 2;
+sbit OUTPUT2 = GPIO_PLCIO ^ 1;
+sbit OUTPUT3 = GPIO_PLCIO ^ 0;
 
 uchar bdata bitChar;					//用来保存各类状态的虚拟uchar
 sbit  receiveCmdNotify	= bitChar^0;	//串口接受了一个符合校验的完整的指令，需要立即处理
